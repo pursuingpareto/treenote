@@ -7,13 +7,16 @@
 //
 
 import UIKit
+import Down
 
 class DefaultCardCell: CardCell {
     
     @IBOutlet weak var mainLabel: UILabel!
     
     override func setup(withCell cell: Cell) {
-        mainLabel.text = cell.text
+        let down =  Down(markdownString: cell.text)
+        try? mainLabel.attributedText = down.toAttributedString()
+//        mainLabel.text = cell.text
         switch cell.state {
         case .focused:
             backgroundColor = UIColor.white
