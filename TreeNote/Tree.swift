@@ -17,11 +17,11 @@ class Tree {
     
     
     func addCell(cell: Cell, toParent parent: Cell?, atIndex index: Int) {
-        let newCell = Cell()
         if let parent = parent {
-            parent.add(cell: newCell, atIndex: index)
+            parent.add(cell: cell, atIndex: index)
         } else {
-            self.rootCells.insert(newCell, at: index)
+            print("adding cell with text \(cell) to rootCells")
+            self.rootCells.insert(cell, at: index)
         }
     }
     

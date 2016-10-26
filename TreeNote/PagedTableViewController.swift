@@ -293,7 +293,8 @@ extension PagedTableViewController: UITableViewDelegate {
     }
     
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: IndexPath) -> Bool {
-        return indexPathsOfSelectedCells.contains(indexPath)
+//        return indexPathsOfSelectedCells.contains(indexPath)
+        return true
     }
     
     func tableView(_ tableView: UITableView, indentationLevelForRowAt indexPath: IndexPath) -> Int {

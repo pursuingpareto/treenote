@@ -18,9 +18,11 @@ class TreeViewController: PagedTableViewController {
     
     // TODO - reimplement this to reduce the amount of repeated tree traversal.
     var treeData : [[[Cell]]] {
+        print("accessing tree data")
         var depth = 0
         var data = [[[Cell]]]()
         while true {
+            
             let sectionedCells = tree.getSectionedCells(atDepth: depth)
             guard !sectionedCells.isEmpty else {
                 return data
@@ -81,6 +83,31 @@ class TreeViewController: PagedTableViewController {
         return nil
     }
     
+    fileprivate func addCell(toIndexPath: IndexPath, toPage: Int, fromIndexPath: IndexPath, fromPage: Int, withParent parent: Cell?) -> EditingCardCell? {
+        guard let cell = getCell(forIndexPath: fromIndexPath, onPage: fromPage) else {
+            return nil
+        }
+        let newCell = Cell()
+        newCell.parent = parent
+        newCell.state = .editing
+        cell.state = .focused
+        selectedCell = nil
+        selectedParentCell = nil
+        selectedChildCell = nil
+        tree.addCell(cell: newCell, toParent: cell.parent, atIndex: toIndexPath.row)
+        currentTableView.beginUpdates()
+        currentTableView.insertRows(at: [toIndexPath], with: .none)
+        var indexSet = IndexSet()
+        indexSet.insert(toIndexPath.section)
+        currentTableView.reloadSections(indexSet, with: .automatic)
+        currentTableView.endUpdates()
+        guard let editCell = currentTableView.cellForRow(at: toIndexPath) as? EditingCardCell else {
+            print("couldn't dequeue editing cell")
+            return nil
+        }
+        return editCell
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -104,6 +131,7 @@ extension TreeViewController: PagedTableViewControllerDataSource {
         var cardCell: CardCell
         switch cell.state {
         case .editing:
+            print("found editing cell at indexPath \(indexPath)")
             cardCell = pagedTableViewController.dequeueReusableCellWithIdentifier(cell.state.reuseIdentifier, forCellAtIndexPath: indexPath, onPage: page) as! EditingCardCell
         case .selected:
             cardCell = pagedTableViewController.dequeueReusableCellWithIdentifier(cell.state.reuseIdentifier, forCellAtIndexPath: indexPath, onPage: page) as! SelectedCardCell
@@ -219,9 +247,32 @@ extension TreeViewController: CardCellDelegate {
     
     func addAboveButtonPressed(inCardCell cardCell: SelectedCardCell) {
         print("delegate acknowledges add above")
+        guard let indexPath = currentTableView.indexPath(for: cardCell) else {
+            return
+        }
+        guard let cell = getCell(forIndexPath: indexPath, onPage: currentPage) else {
+            return
+        }
+        guard let editCell = addCell(toIndexPath: indexPath, toPage: currentPage, fromIndexPath: indexPath, fromPage: 0, withParent: cell.parent) else {
+            print("error retrieving edit cell")
+            return
+        }
+        editCell.markdownTextView.becomeFirstResponder()
     }
     
     func addBelowButtonPressed(inCardCell cardCell: SelectedCardCell) {
+        guard let indexPath = currentTableView.indexPath(for: cardCell) else {
+            return
+        }
+        guard let cell = getCell(forIndexPath: indexPath, onPage: currentPage) else {
+            return
+        }
+        let newCellIndexPath = IndexPath(row: indexPath.row+1, section: indexPath.section)
+        guard let editCell = addCell(toIndexPath: newCellIndexPath, toPage: currentPage, fromIndexPath: indexPath, fromPage: 0, withParent: cell.parent) else {
+            print("error retrieving edit cell")
+            return
+        }
+        editCell.markdownTextView.becomeFirstResponder()
         print("delegate acknowledges add below")
     }
     
