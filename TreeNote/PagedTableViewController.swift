@@ -201,6 +201,7 @@ extension PagedTableViewController: UIPageViewControllerDataSource{
 
 extension PagedTableViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+        print("will transition")
         guard let nextViewController = pendingViewControllers.first as? UITableViewController else {
             return
         }
@@ -210,7 +211,8 @@ extension PagedTableViewController: UIPageViewControllerDelegate {
         }
         indexPathsOfSelectedCells.removeAll()
         currentPage = nextPage
-        if let scrollPosition = self.ptvcDelegate?.pagedTableViewController?(self, scrollPositionForTransitionToPage: nextPage, fromPage: currentPage, withSwipeAt: self.indexPathOfLastSwipe) {
+        print("last swipe was at \(indexPathOfLastSwipe)")
+        if let scrollPosition = self.ptvcDelegate?.pagedTableViewController?(self, scrollPositionForTransitionToPage: nextPage, fromPage: previousPage!, withSwipeAt: self.indexPathOfLastSwipe) {
             nextViewController.tableView.scrollToRow(at: scrollPosition, at: .top, animated: true)
         }
     }

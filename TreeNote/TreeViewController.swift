@@ -308,8 +308,35 @@ extension TreeViewController: PagedTableViewControllerDelegate {
 
     
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, scrollPositionForTransitionToPage nextPage: Int, fromPage: Int, withSwipeAt indexPath: IndexPath?) -> IndexPath? {
+        print("getting scroll position")
         // TODO - improve this implementation
-        return IndexPath(row: 0, section: 0)
+        guard let indexPath = indexPath else {
+            return nil
+        }
+        print("...for indexPath \(indexPath)")
+        guard let swipedCell = getCell(forIndexPath: indexPath, onPage: fromPage) else {
+            return nil
+        }
+        if nextPage > fromPage {
+            var section = indexPathForNewChildOfCell(swipedCell, onPage: fromPage).section
+            let maxSection = ptvcDataSource.pagedTableViewController(self, numberOfSectionsOnPage: nextPage)
+            if section > maxSection-1 {
+                section = maxSection - 1
+            }
+            print("Should scroll to section \(section)")
+            return IndexPath(row: 0, section: section)
+        } else {
+            for (secNum, sec) in treeData[nextPage].enumerated() {
+                for (rowNum, cell) in sec.enumerated() {
+                    if cell == swipedCell.parent {
+                        let destIndexPath = IndexPath(row: rowNum, section: secNum)
+                        print("Should scroll to \(destIndexPath)")
+                        return destIndexPath
+                    }
+                }
+            }
+        }
+        return nil
     }
 }
 
