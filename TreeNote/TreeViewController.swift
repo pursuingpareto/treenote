@@ -18,7 +18,6 @@ class TreeViewController: PagedTableViewController {
     
     // TODO - reimplement this to reduce the amount of repeated tree traversal.
     var treeData : [[[Cell]]] {
-        print("accessing tree data")
         var depth = 0
         var data = [[[Cell]]]()
         while true {
@@ -48,7 +47,7 @@ class TreeViewController: PagedTableViewController {
     }
     
     fileprivate func getCell(forIndexPath indexPath: IndexPath, onPage page: Int) -> Cell? {
-        print("page: \(page), indexPath: \(indexPath)")
+        print("getting cell on page \(page) at indexPath \(indexPath)")
         return treeData[page][indexPath.section][indexPath.row]
     }
     
@@ -83,29 +82,95 @@ class TreeViewController: PagedTableViewController {
         return nil
     }
     
+    fileprivate func indexPathForNewChildOfCell(_ cell: Cell, onPage page: Int) -> IndexPath {
+        let nextPage = page + 1
+        if nextPage < treeData.count {
+            var nextSection = 0
+            for section in treeData[page] {
+                for cellInSection in section {
+                    if cell == cellInSection {
+                        return IndexPath(row: cell.children.count, section: nextSection)
+                    }
+                    if cellInSection.children.count > 0 {
+                        nextSection += 1
+                    }
+                }
+            }
+            print("INVALID! The cell \(cell) doesn't exist on page \(page)")
+        }
+        return IndexPath(row: 0, section: 0)
+    }
+    
     fileprivate func addCell(toIndexPath: IndexPath, toPage: Int, fromIndexPath: IndexPath, fromPage: Int, withParent parent: Cell?) -> EditingCardCell? {
+        print("adding cell")
         guard let cell = getCell(forIndexPath: fromIndexPath, onPage: fromPage) else {
+//            print("error retrieving cell while adding new cell")
             return nil
         }
         let newCell = Cell()
-        newCell.parent = parent
+//        newCell.parent = parent
         newCell.state = .editing
+//        newCell.text = "example text"
         cell.state = .focused
         selectedCell = nil
         selectedParentCell = nil
         selectedChildCell = nil
-        tree.addCell(cell: newCell, toParent: cell.parent, atIndex: toIndexPath.row)
-        currentTableView.beginUpdates()
-        currentTableView.insertRows(at: [toIndexPath], with: .none)
-        var indexSet = IndexSet()
-        indexSet.insert(toIndexPath.section)
-        currentTableView.reloadSections(indexSet, with: .automatic)
-        currentTableView.endUpdates()
-        guard let editCell = currentTableView.cellForRow(at: toIndexPath) as? EditingCardCell else {
-            print("couldn't dequeue editing cell")
-            return nil
+        if parent != nil && toPage != fromPage {
+            if toPage >= treeData.count {
+                addPage(forPage: toPage)
+                print("there are \(tableViews.count) UI pages")
+            }
+            let tableView = tableViews[toPage]
+            tree.addCell(cell: newCell, toParent: parent, atIndex: toIndexPath.row)
+            if parent!.children.count == 1 {
+                print("inserting section \(toIndexPath.section)")
+                var indexSet = IndexSet()
+                indexSet.insert(toIndexPath.section)
+                tableView.insertSections(indexSet, with: .none)
+            } else {
+                tableView.insertRows(at: [toIndexPath], with: .none)
+                print("inserted row at indexPath \(toIndexPath) on page \(tableViews.index(of: tableView))")
+            }
+            
+            print("there are \(treeData.count) data pages")
+//            guard let indexPath = indexPathForCell(cell: newCell, onPage: toPage) else {
+//                print("couldn't get indexPath")
+//                return nil
+//            }
+//            print("index path of new cell SHOULD be \(indexPath) on page \(toPage)")
+            
+            
+//            tableView.beginUpdates()
+            
+            tableView.reloadData()
+//            var indexSet = IndexSet()
+//            indexSet.insert(toIndexPath.section)
+//            tableView.reloadSections(indexSet, with: .automatic)
+//            tableView.endUpdates()
+            guard let cardCell = tableView.cellForRow(at: toIndexPath) else {
+                print("ERROR!! Couldn't get ANY cell at indexpath \(toIndexPath)")
+                return nil
+            }
+            print("got cell!! It's \(cardCell)")
+            guard let editCell = tableView.cellForRow(at: toIndexPath) as? EditingCardCell else {
+                print("ERROR! couldn't get editing cell at indexPath \(toIndexPath) on page \(toPage)")
+                return nil
+            }
+            return editCell
+        } else {
+            tree.addCell(cell: newCell, toParent: cell.parent, atIndex: toIndexPath.row)
+            currentTableView.beginUpdates()
+            currentTableView.insertRows(at: [toIndexPath], with: .none)
+            var indexSet = IndexSet()
+            indexSet.insert(toIndexPath.section)
+            currentTableView.reloadSections(indexSet, with: .automatic)
+            currentTableView.endUpdates()
+            guard let editCell = currentTableView.cellForRow(at: toIndexPath) as? EditingCardCell else {
+                print("ERROR: couldn't get editing cell")
+                return nil
+            }
+            return editCell
         }
-        return editCell
     }
     
     override func didReceiveMemoryWarning() {
@@ -131,7 +196,6 @@ extension TreeViewController: PagedTableViewControllerDataSource {
         var cardCell: CardCell
         switch cell.state {
         case .editing:
-            print("found editing cell at indexPath \(indexPath)")
             cardCell = pagedTableViewController.dequeueReusableCellWithIdentifier(cell.state.reuseIdentifier, forCellAtIndexPath: indexPath, onPage: page) as! EditingCardCell
         case .selected:
             cardCell = pagedTableViewController.dequeueReusableCellWithIdentifier(cell.state.reuseIdentifier, forCellAtIndexPath: indexPath, onPage: page) as! SelectedCardCell
@@ -157,9 +221,7 @@ extension TreeViewController: PagedTableViewControllerDelegate {
         selectedChildCell = nil
         selectedParentCell = nil
         if previouslySelected != nil && previouslySelected != cell {
-            print("previously selected is \(previouslySelected!.text)")
             previouslySelected!.state = stateForCell(cell: previouslySelected!)
-            print("previously selected state is \(previouslySelected!.state)")
             if let previousIndexPath = indexPathForCell(cell: previouslySelected!, onPage: page) {
                 print("previous indexPath is \(previousIndexPath)")
                 indexPathsNeedingUpdate.append(previousIndexPath)
@@ -175,7 +237,6 @@ extension TreeViewController: PagedTableViewControllerDelegate {
 //        }
         cell.state = nextState
         currentTableView.beginUpdates()
-        print("indexPaths needing update are \(indexPathsNeedingUpdate)")
         currentTableView.reloadRows(at: indexPathsNeedingUpdate, with: .automatic)
         
         currentTableView.endUpdates()
@@ -207,6 +268,32 @@ extension TreeViewController: PagedTableViewControllerDelegate {
 //        default:
 //            return 90
 //        }
+    }
+    
+    func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didFinishAnimatingTransition finished: Bool, toPage: Int) {
+        print("did finish editing")
+        let sections = treeData[toPage]
+        for (sectionNum, section) in sections.enumerated() {
+            for (rowNum, cell) in section.enumerated() {
+                if cell.state == .editing {
+                    let indexPath = IndexPath(row: rowNum, section: sectionNum)
+                    
+                    
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        self.currentTableView.reloadData()
+                        DispatchQueue.main.async {
+                            guard let editCell = self.cellForRowAt(indexPath: indexPath, onPage: toPage) as? EditingCardCell else {
+                                let cell = self.getCell(forIndexPath: indexPath, onPage: toPage)
+                                print("cell at \(indexPath) on page \(toPage) has state \(cell?.state) and text \(cell?.text)")
+                                return
+                            }
+                            print("GOT EDIT CELL with text \(editCell.markdownTextView.text)")
+                            editCell.markdownTextView.becomeFirstResponder()
+                        }
+                    }
+                }
+            }
+        }
     }
     
     func reuseIdentifiersToRegister(forTableViewOnPage page: Int) -> [String : String] {
@@ -253,7 +340,7 @@ extension TreeViewController: CardCellDelegate {
         guard let cell = getCell(forIndexPath: indexPath, onPage: currentPage) else {
             return
         }
-        guard let editCell = addCell(toIndexPath: indexPath, toPage: currentPage, fromIndexPath: indexPath, fromPage: 0, withParent: cell.parent) else {
+        guard let editCell = addCell(toIndexPath: indexPath, toPage: currentPage, fromIndexPath: indexPath, fromPage: currentPage, withParent: cell.parent) else {
             print("error retrieving edit cell")
             return
         }
@@ -268,7 +355,7 @@ extension TreeViewController: CardCellDelegate {
             return
         }
         let newCellIndexPath = IndexPath(row: indexPath.row+1, section: indexPath.section)
-        guard let editCell = addCell(toIndexPath: newCellIndexPath, toPage: currentPage, fromIndexPath: indexPath, fromPage: 0, withParent: cell.parent) else {
+        guard let editCell = addCell(toIndexPath: newCellIndexPath, toPage: currentPage, fromIndexPath: indexPath, fromPage: currentPage, withParent: cell.parent) else {
             print("error retrieving edit cell")
             return
         }
@@ -277,6 +364,21 @@ extension TreeViewController: CardCellDelegate {
     }
     
     func addRightButtonPressed(inCardCell cardCell: SelectedCardCell) {
+        guard let indexPath = currentTableView.indexPath(for: cardCell) else {
+            return
+        }
+        guard let cell = getCell(forIndexPath: indexPath, onPage: currentPage) else {
+            return
+        }
+        let nextPage = currentPage + 1
+        
+        let newCellIndexPath = indexPathForNewChildOfCell(cell, onPage: currentPage)
+        guard let editCell = addCell(toIndexPath: newCellIndexPath, toPage: nextPage, fromIndexPath: indexPath, fromPage: currentPage, withParent: cell) else {
+            print("ERROR couldn't retrieve edit cell while adding right!")
+            return
+        }
+        scrollRight(completion: nil)
+//        editCell.markdownTextView.becomeFirstResponder()
         print("delegate acknowledges add right")
     }
     

@@ -11,6 +11,7 @@ import Down
 
 class SelectedCardCell: CardCell {
     
+    @IBOutlet weak var addRightButton: UIButton!
     
     // TODO - implement all these methods through calls to delegate functions.
     @IBAction func addCellAbovePressed(_ sender: UIButton) {
@@ -36,6 +37,11 @@ class SelectedCardCell: CardCell {
     @IBOutlet weak var mainLabel: UILabel!
     
     override func setup(withCell cell: Cell) {
+        if cell.children.count == 0 {
+            addRightButton.isHidden = false
+        } else {
+            addRightButton.isHidden = true
+        }
         let down =  Down(markdownString: cell.text)
         try? mainLabel.attributedText = down.toAttributedString()
 //        mainLabel.text = cell.text

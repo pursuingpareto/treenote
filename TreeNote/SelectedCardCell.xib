@@ -116,6 +116,7 @@
                 </constraints>
             </tableViewCellContentView>
             <connections>
+                <outlet property="addRightButton" destination="4cV-qj-ha0" id="Gn2-bh-ycf"/>
                 <outlet property="mainLabel" destination="vt8-gL-guv" id="Eak-ay-9Xf"/>
             </connections>
             <point key="canvasLocation" x="105.5" y="157"/>
