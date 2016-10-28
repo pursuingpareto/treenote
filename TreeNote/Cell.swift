@@ -26,7 +26,7 @@ enum CellState {
     }
 }
 
-class Cell {
+class Cell: NSObject, NSCoding {
     var text: String = ""
     weak var parent: Cell?
     var children = [Cell]()
@@ -40,15 +40,35 @@ class Cell {
         self.children.insert(cell, at: index)
         cell.parent = self
     }
-}
-
-extension Cell: Equatable {
-    static func ==(lhs: Cell, rhs: Cell) -> Bool {
-        if lhs.parent == rhs.parent && lhs.text == rhs.text && lhs.children.count == rhs.children.count {
-            return true
-        } else {
-            return false
+    
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(text, forKey: PropertyKey.cellTextKey)
+        aCoder.encode(parent, forKey: PropertyKey.cellParentKey)
+        aCoder.encode(children, forKey: PropertyKey.cellChildrenKey)
+    }
+    
+    required convenience init?(coder aDecoder: NSCoder) {
+        let text = aDecoder.decodeObject(forKey: PropertyKey.cellTextKey) as? String
+        let parent = aDecoder.decodeObject(forKey: PropertyKey.cellParentKey) as? Cell
+        let children = aDecoder.decodeObject(forKey: PropertyKey.cellChildrenKey) as? [Cell]
+        guard text != nil && children != nil else {
+            print("error decoding cell")
+            return nil
         }
+        self.init()
+        self.parent = parent
+        self.text = text!
+        self.children = children!
     }
 }
+
+//extension Cell: Equatable {
+//    static func ==(lhs: Cell, rhs: Cell) -> Bool {
+//        if lhs.parent == rhs.parent && lhs.text == rhs.text && lhs.children.count == rhs.children.count {
+//            return true
+//        } else {
+//            return false
+//        }
+//    }
+//}
 

@@ -10,14 +10,35 @@ import UIKit
 
 class TreeBrowseController: UIViewController {
     
-    var treeTitles = [String]()
+    var trees : [Tree] {
+        get {
+            return User.sharedInstance.trees
+        }
+        set {
+            User.sharedInstance.trees = newValue
+        }
+    }
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.dataSource = self
         tableView.delegate = self
-        treeTitles.append("My First Tree")
+        if let userTrees = User.sharedInstance.loadTrees() {
+            // user already has some saved trees.
+            trees = userTrees
+            if trees.count == 0 {
+                let newTree = Tree(rootCells: [], title: "New Tree")!
+                newTree.populateWithFakeData()
+                trees = [newTree]
+            }
+        } else {
+            if let tree = Tree(rootCells: [], title: "Untitled Tree") {
+                tree.populateWithFakeData()
+                trees = [tree]
+            }
+        }
+//        treeTitles.append("My First Tree")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -25,11 +46,11 @@ class TreeBrowseController: UIViewController {
         tableView.reloadData()
     }
     
-    fileprivate func treeForTitle(_ title: String) -> Tree {
-        let tree = Tree()
-        tree.populateWithFakeData()
-        return tree
-    }
+//    fileprivate func treeForTitle(_ title: String) -> Tree? {
+//        let tree = Tree(rootCells: [], title: title)
+//        tree?.populateWithFakeData()
+//        return tree
+//    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
@@ -41,13 +62,21 @@ class TreeBrowseController: UIViewController {
             print("tree browse cell had no textlabel text")
             return
         }
-        let tree = treeForTitle(treeTitle)
+        var tree: Tree? = nil
+        for t in trees {
+            if t.title == treeTitle {
+                tree = t
+                break
+            }
+        }
         guard let nextVC = segue.destination as? TreeViewController else {
             print("attempting to segue to invalid view controller \(segue.destination)")
             return
         }
-        nextVC.tree = tree
-        nextVC.navigationItem.title = treeTitle
+        if tree != nil {
+            nextVC.tree = tree
+            nextVC.navigationItem.title = treeTitle
+        }
     }
 }
 
@@ -57,12 +86,11 @@ extension TreeBrowseController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return treeTitles.count
+        return trees.count
     }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "treeBrowseCell", for: indexPath) as! TreeBrowseCell
-        cell.textLabel!.text = treeTitles[indexPath.row]
+        cell.textLabel!.text = trees[indexPath.row].title
         return cell
     }
 }

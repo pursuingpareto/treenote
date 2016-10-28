@@ -41,8 +41,11 @@ class TreeViewController: PagedTableViewController {
     override func loadView() {
         ptvcDataSource = self
         ptvcDelegate = self
-        tree = Tree()
-        tree.populateWithFakeData()
+//        tree = Tree(rootCells: [], title: "Untitled Tree")!
+//        tree.populateWithFakeData()
+        if tree.rootCells.count == 0 {
+            tree.populateWithFakeData()
+        }
         super.loadView()
     }
     

@@ -8,13 +8,31 @@
 
 import Foundation
 
-class Tree {
+struct PropertyKey {
+    static let rootCellKey = "rootCells"
+    static let titleKey = "title"
+    static let cellTextKey = "cellText"
+    static let cellChildrenKey = "cellChildren"
+    static let cellParentKey = "cellParent"
+}
+
+class Tree: NSObject, NSCoding {
+    
     var title = "Untitled Tree"
 //    private(set) var rootCells: [Cell] = [Cell()]
-    private(set) var rootCells = [Cell]()
+    fileprivate(set) var rootCells = [Cell]()
     // TODO - implement this to actually return maxDepth...
     private(set) var maxDepth = 2
     
+    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    static let ArchiveURL = DocumentsDirectory.appendingPathComponent("trees")
+    
+    
+    init?(rootCells: [Cell], title: String) {
+        self.title = title
+        self.rootCells = rootCells
+        super.init()
+    }
     
     func addCell(cell: Cell, toParent parent: Cell?, atIndex index: Int) {
         if let parent = parent {
@@ -121,4 +139,25 @@ class Tree {
             }
         }
     }
+    
+    // MARK: NSCoding
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(rootCells, forKey: PropertyKey.rootCellKey)
+        aCoder.encode(title, forKey: PropertyKey.titleKey)
+    }
+    
+    required convenience init?(coder aDecoder: NSCoder) {
+        guard let rootCells = aDecoder.decodeObject(forKey: PropertyKey.rootCellKey) as? [Cell] else {
+            print("error decoding rootCells")
+            return nil
+        }
+        guard let title = aDecoder.decodeObject(forKey: PropertyKey.titleKey) as? String else {
+            print("error decoding title")
+            return nil
+        }
+        self.init(rootCells: rootCells, title: title)
+        
+    }
 }
+
+
