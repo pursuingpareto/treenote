@@ -64,7 +64,7 @@ class TreeViewController: PagedTableViewController {
     }
     
     fileprivate func stateForCell(cell: Cell) -> CellState {
-        if cell.parent == selectedParentCell || cell.parent == selectedCell || cell == selectedChildCell?.parent {
+        if cell.parent == selectedParentCell || cell.parent == selectedCell?.parent || cell == selectedChildCell?.parent {
             return CellState.focused
         } else {
             return CellState.unfocused
@@ -116,6 +116,9 @@ class TreeViewController: PagedTableViewController {
         selectedParentCell = nil
         selectedChildCell = nil
         if parent != nil && toPage != fromPage {
+            if toPage > fromPage {
+                selectedParentCell = getCell(forIndexPath: fromIndexPath, onPage: fromPage)
+            }
             if toPage >= treeData.count {
                 addPage(forPage: toPage)
                 print("there are \(tableViews.count) UI pages")
@@ -133,20 +136,9 @@ class TreeViewController: PagedTableViewController {
             }
             
             print("there are \(treeData.count) data pages")
-//            guard let indexPath = indexPathForCell(cell: newCell, onPage: toPage) else {
-//                print("couldn't get indexPath")
-//                return nil
-//            }
-//            print("index path of new cell SHOULD be \(indexPath) on page \(toPage)")
-            
-            
-//            tableView.beginUpdates()
             
             tableView.reloadData()
-//            var indexSet = IndexSet()
-//            indexSet.insert(toIndexPath.section)
-//            tableView.reloadSections(indexSet, with: .automatic)
-//            tableView.endUpdates()
+
             guard let cardCell = tableView.cellForRow(at: toIndexPath) else {
                 print("ERROR!! Couldn't get ANY cell at indexpath \(toIndexPath)")
                 return nil
@@ -216,7 +208,34 @@ extension TreeViewController: PagedTableViewControllerDelegate {
             return
         }
         var indexPathsNeedingUpdate = [indexPath]
+//        for c in [selectedCell, selectedParentCell, selectedChildCell] {
+//            if c != nil {
+//                indexPathsNeedingUpdate.append(indexPath)
+//            }
+//        }
+        
+        var sectionsNeedingUpdate = IndexSet()
+        sectionsNeedingUpdate.insert(indexPath.section)
         let previouslySelected = selectedCell
+        if selectedParentCell != nil {
+            for (secNum, sec) in treeData[page].enumerated() {
+                if sec.first?.parent == selectedParentCell {
+                    sectionsNeedingUpdate.insert(secNum)
+                }
+            }
+            selectedParentCell = nil
+        }
+        
+        if selectedChildCell != nil && selectedChildCell?.parent != nil{
+            if let parentIndexPath = indexPathForCell(cell: selectedChildCell!.parent!, onPage: page) {
+                sectionsNeedingUpdate.insert(parentIndexPath.section)
+                return
+            } else {
+                print("couldn't get a parent index path!")
+            }
+            selectedChildCell = nil
+        }
+        
         selectedCell = cell
         selectedChildCell = nil
         selectedParentCell = nil
@@ -225,8 +244,10 @@ extension TreeViewController: PagedTableViewControllerDelegate {
             if let previousIndexPath = indexPathForCell(cell: previouslySelected!, onPage: page) {
                 print("previous indexPath is \(previousIndexPath)")
                 indexPathsNeedingUpdate.append(previousIndexPath)
+                sectionsNeedingUpdate.insert(previousIndexPath.section)
             }
         }
+        
         let nextState = nextStateForSelection(ofCell: cell)
         guard nextState != cell.state else {
             return
@@ -236,10 +257,12 @@ extension TreeViewController: PagedTableViewControllerDelegate {
 //            indexPathsToUpdate.append(cu)
 //        }
         cell.state = nextState
-        currentTableView.beginUpdates()
-        currentTableView.reloadRows(at: indexPathsNeedingUpdate, with: .automatic)
         
+        currentTableView.beginUpdates()
+        currentTableView.reloadSections(sectionsNeedingUpdate, with: .automatic)
         currentTableView.endUpdates()
+//        currentTableView.scrollToRow(at: indexPath, at: .top, animated: false)
+        
     }
     
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didDeselectRowAt indexPath: IndexPath, onPage page: Int) {
@@ -317,7 +340,11 @@ extension TreeViewController: PagedTableViewControllerDelegate {
         guard let swipedCell = getCell(forIndexPath: indexPath, onPage: fromPage) else {
             return nil
         }
+        selectedCell = nil
+        selectedChildCell = nil
+        selectedParentCell = nil
         if nextPage > fromPage {
+            selectedParentCell = getCell(forIndexPath: indexPath, onPage: fromPage)
             var section = indexPathForNewChildOfCell(swipedCell, onPage: fromPage).section
             let maxSection = ptvcDataSource.pagedTableViewController(self, numberOfSectionsOnPage: nextPage)
             if section > maxSection-1 {
@@ -326,6 +353,7 @@ extension TreeViewController: PagedTableViewControllerDelegate {
             print("Should scroll to section \(section)")
             return IndexPath(row: 0, section: section)
         } else {
+            selectedChildCell = getCell(forIndexPath: indexPath, onPage: fromPage)
             for (secNum, sec) in treeData[nextPage].enumerated() {
                 for (rowNum, cell) in sec.enumerated() {
                     if cell == swipedCell.parent {
@@ -349,18 +377,39 @@ extension TreeViewController: CardCellDelegate {
             return
         }
         cell.state = .editing
-        currentTableView.beginUpdates()
-        currentTableView.reloadRows(at: [indexPath], with: .automatic)
-        currentTableView.endUpdates()
-        guard let editingCell = currentTableView.cellForRow(at: indexPath) as? EditingCardCell else {
-            return
+
+        self.currentTableView.beginUpdates()
+        var indexSet = IndexSet()
+        indexSet.insert(indexPath.section)
+//        self.currentTableView.reloadRows(at: [indexPath], with: .automatic)
+        self.currentTableView.reloadSections(indexSet, with: .automatic)
+        self.currentTableView.endUpdates()
+        currentTableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        DispatchQueue.global(qos: .userInitiated).async {
+
+//            self.currentTableView.reloadData()
+            DispatchQueue.main.async {
+//                self.currentTableView.beginUpdates()
+//                self.currentTableView.reloadRows(at: [indexPath], with: .automatic)
+//                self.currentTableView.endUpdates()
+                guard let newCell = self.cellForRowAt(indexPath: indexPath, onPage: self.currentPage) else {
+                    print("couldn't even get a measely uitableview cell")
+                    return
+                }
+                print("newCell is \(newCell)")
+                guard let editingCell = self.cellForRowAt(indexPath: indexPath, onPage: self.currentPage) as? EditingCardCell else {
+                    print("couldn't get editing cell after pressing edit button.")
+                    return
+                }
+                editingCell.markdownTextView.becomeFirstResponder()
+            }
+            
         }
-        editingCell.markdownTextView.becomeFirstResponder()
-        print("delegate acknowledge edit")
+        
+
     }
     
     func addAboveButtonPressed(inCardCell cardCell: SelectedCardCell) {
-        print("delegate acknowledges add above")
         guard let indexPath = currentTableView.indexPath(for: cardCell) else {
             return
         }
@@ -419,6 +468,8 @@ extension TreeViewController: CardCellDelegate {
         cell.text = textView.text
         cell.state = .selected
         selectedCell = cell
+        selectedParentCell = nil
+        selectedChildCell = nil
         currentTableView.beginUpdates()
         currentTableView.reloadRows(at: [indexPath], with: .automatic)
         currentTableView.endUpdates()

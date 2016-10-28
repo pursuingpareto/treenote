@@ -27,18 +27,10 @@ class PagedTableViewController: UIPageViewController {
     }
     
     public func cellForRowAt(indexPath : IndexPath, onPage page: Int) -> UITableViewCell? {
-//        if page >= self.orderedViewControllers.count {
-//            addViewController(forPage: page)
-//            let tableView = self.orderedViewControllers[page].tableView!
-//            tableView.reloadRows(at: [indexPath], with: .none)
-//            return tableView.cellForRow(at: indexPath)
-//        }
         let tableView = self.orderedViewControllers[page].tableView!
         tableView.reloadRows(at: [indexPath], with: .none)
         return tableView.cellForRow(at: indexPath)
 
-//        tableView.reloadRows(at: [indexPath], with: .none)
-//        return tableView.cellForRow(at: indexPath)
     }
     
     public func scrollRight(completion: (() -> Void)?) {
@@ -71,16 +63,8 @@ class PagedTableViewController: UIPageViewController {
         })
     }
     
-    
-//    fileprivate(set) public var indexPathForSelectionOnPreviousPage: IndexPath?
-//    fileprivate(set) public var indexPathForSelectionOnCurrentPage: IndexPath?
-    
     fileprivate var currentViewController: UITableViewController! {
         return viewControllers!.last as! UITableViewController
-//        willSet {
-//            self.previousPage = self.currentPage
-//            self.currentPage = orderedViewControllers.index(of: newValue)!
-//        }
     }
     public var tableViews = [UITableView]()
     fileprivate var orderedViewControllers = [UITableViewController]()

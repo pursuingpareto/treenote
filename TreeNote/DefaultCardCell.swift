@@ -21,7 +21,7 @@ class DefaultCardCell: CardCell {
         case .focused:
             backgroundColor = UIColor.white
         default:
-            backgroundColor = UIColor.lightGray
+            backgroundColor = UIColor(white: 0.9, alpha: 1.0)
         }
     }
 }
