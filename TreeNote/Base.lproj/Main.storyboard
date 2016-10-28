@@ -47,7 +47,18 @@
                             <constraint firstItem="oZt-Sy-u1u" firstAttribute="leading" secondItem="ZNv-pn-kJi" secondAttribute="leading" id="bPg-la-8lU"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="My Trees" id="l5a-4J-HJh"/>
+                    <navigationItem key="navigationItem" title="My Trees" id="l5a-4J-HJh">
+                        <barButtonItem key="leftBarButtonItem" title="Edit" id="w9p-ck-wDM">
+                            <connections>
+                                <action selector="editButtonPressed:" destination="StF-Xh-TUB" id="f2t-tM-wnm"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Add" id="OBx-Hh-XxA">
+                            <connections>
+                                <action selector="addButtonPressed:" destination="StF-Xh-TUB" id="EwW-2s-jFp"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="oZt-Sy-u1u" id="A1R-Qa-Ac0"/>
                     </connections>
@@ -59,7 +70,9 @@
         <!--Tree View Controller-->
         <scene sceneID="obR-W9-JKH">
             <objects>
-                <pageViewController autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="Rl7-Yi-VVb" customClass="TreeViewController" customModule="TreeNote" customModuleProvider="target" sceneMemberID="viewController"/>
+                <pageViewController autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="Rl7-Yi-VVb" customClass="TreeViewController" customModule="TreeNote" customModuleProvider="target" sceneMemberID="viewController">
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                </pageViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FyQ-4t-u0t" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="976.79999999999995" y="141.67916041979012"/>
@@ -68,6 +81,7 @@
         <scene sceneID="ZiH-89-12O">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="sgd-7C-dTf" sceneMemberID="viewController">
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Sne-gf-bqX">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>

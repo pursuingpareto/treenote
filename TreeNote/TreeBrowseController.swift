@@ -9,17 +9,54 @@
 import UIKit
 
 class TreeBrowseController: UIViewController {
-    
+    var newTitleField: UITextField?
     var trees : [Tree] {
         get {
             return User.sharedInstance.trees
         }
         set {
+            print("set value of trees. Now there are \(newValue.count)")
             User.sharedInstance.trees = newValue
         }
     }
     @IBOutlet weak var tableView: UITableView!
     
+    @IBAction func editButtonPressed(_ sender: UIBarButtonItem) {
+        tableView.setEditing(!tableView.isEditing, animated: true)
+        sender.title = tableView.isEditing ? "Done" : "Edit"
+    }
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        let newTreePrompt = UIAlertController(title: "Create New Tree", message: nil, preferredStyle: .alert)
+        newTreePrompt.addTextField(configurationHandler: {
+            textField in
+            textField.placeholder = "New Tree Title"
+            textField.autocapitalizationType = .words
+            self.newTitleField = textField
+        })
+        newTreePrompt.addAction(UIAlertAction(title: "Cancel", style: .cancel , handler: nil))
+        newTreePrompt.addAction(UIAlertAction(title: "OK", style: .default, handler: {
+            action in
+            let firstCell = Cell()
+            firstCell.text = "Example Text"
+            let newTree = Tree(rootCells: [firstCell], title: "Untitled Tree")!
+            guard let text = self.newTitleField?.text else {
+                print("no text found for title")
+                return
+            }
+            newTree.title = text
+            for tree in self.trees {
+                if tree.title == text {
+                    print("title already exists.")
+                    return
+                }
+            }
+            self.trees.append(newTree)
+            self.tableView.insertRows(at: [IndexPath(row: self.trees.count-1, section: 0)] , with: .automatic)
+            
+        }))
+        present(newTreePrompt, animated: true, completion: nil)
+        
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.dataSource = self
@@ -96,6 +133,26 @@ extension TreeBrowseController: UITableViewDataSource {
 }
 
 extension TreeBrowseController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+        return UITableViewCellEditingStyle.delete
+    }
+    
+//    func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
+//        return "Delete."
+//    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        guard editingStyle == .delete else {
+            return
+        }
+        trees.remove(at: indexPath.row)
+        tableView.deleteRows(at: [indexPath], with: .automatic)
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
 //    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 //        let title = treeTitles[indexPath.row]
 //        let tree = treeForTitle(title)
