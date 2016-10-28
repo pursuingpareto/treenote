@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		04EBDCC1C019D223049B5AFF /* Pods_TreeNote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 619D7327E5D0C10582088777 /* Pods_TreeNote.framework */; };
 		6EFD9250E9EC89E26FD6E445 /* Pods_TreeNoteUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F4FFFF4EF0180C18E5FC8AE /* Pods_TreeNoteUITests.framework */; };
+		A1E59A791DC3E6DA006B4BF8 /* TreeBrowseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E59A781DC3E6DA006B4BF8 /* TreeBrowseController.swift */; };
+		A1E59A7B1DC3E8FD006B4BF8 /* TreeBrowseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E59A7A1DC3E8FD006B4BF8 /* TreeBrowseCell.swift */; };
 		A1EE86AD1DBFDD9D002E56C8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE86AC1DBFDD9D002E56C8 /* AppDelegate.swift */; };
 		A1EE86B21DBFDD9D002E56C8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1EE86B01DBFDD9D002E56C8 /* Main.storyboard */; };
 		A1EE86B41DBFDD9D002E56C8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1EE86B31DBFDD9D002E56C8 /* Assets.xcassets */; };
@@ -59,6 +61,8 @@
 		619D7327E5D0C10582088777 /* Pods_TreeNote.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TreeNote.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6AB212210E7407A7050E5E89 /* Pods-TreeNoteUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TreeNoteUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TreeNoteUITests/Pods-TreeNoteUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		6E084C2095FC66EA47C4D006 /* Pods-TreeNote.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TreeNote.release.xcconfig"; path = "Pods/Target Support Files/Pods-TreeNote/Pods-TreeNote.release.xcconfig"; sourceTree = "<group>"; };
+		A1E59A781DC3E6DA006B4BF8 /* TreeBrowseController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TreeBrowseController.swift; sourceTree = "<group>"; };
+		A1E59A7A1DC3E8FD006B4BF8 /* TreeBrowseCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TreeBrowseCell.swift; sourceTree = "<group>"; };
 		A1EE86A91DBFDD9D002E56C8 /* TreeNote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TreeNote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1EE86AC1DBFDD9D002E56C8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A1EE86B11DBFDD9D002E56C8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -172,6 +176,7 @@
 				A1EE86DC1DBFDDFF002E56C8 /* TreeViewController.swift */,
 				A1EE87051DC01435002E56C8 /* CardCellDelegate.swift */,
 				A1EE86B01DBFDD9D002E56C8 /* Main.storyboard */,
+				A1E59A781DC3E6DA006B4BF8 /* TreeBrowseController.swift */,
 				A1EE87041DC00121002E56C8 /* PagedTableViewController */,
 				A1EE86E01DBFDE26002E56C8 /* Models */,
 				A1EE86E11DBFDE31002E56C8 /* Views */,
@@ -219,6 +224,7 @@
 				A1EE86E81DBFDE83002E56C8 /* DefaultCardCell.xib */,
 				A1EE86EA1DBFDE91002E56C8 /* SelectedCardCell.xib */,
 				A1EE86EC1DBFDEAE002E56C8 /* EditingCardCell.xib */,
+				A1E59A7A1DC3E8FD006B4BF8 /* TreeBrowseCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -519,11 +525,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1EE86AD1DBFDD9D002E56C8 /* AppDelegate.swift in Sources */,
+				A1E59A7B1DC3E8FD006B4BF8 /* TreeBrowseCell.swift in Sources */,
 				A1EE86DF1DBFDE1D002E56C8 /* Cell.swift in Sources */,
 				A1EE87061DC01435002E56C8 /* CardCellDelegate.swift in Sources */,
 				A1EE86E51DBFDE57002E56C8 /* SelectedCardCell.swift in Sources */,
 				A1EE87031DC00119002E56C8 /* PagedTableViewInteractionType.swift in Sources */,
 				A1EE86E71DBFDE74002E56C8 /* EditingCardCell.swift in Sources */,
+				A1E59A791DC3E6DA006B4BF8 /* TreeBrowseController.swift in Sources */,
 				A1EE86DD1DBFDDFF002E56C8 /* TreeViewController.swift in Sources */,
 				A1EE86FB1DBFF213002E56C8 /* Colors.swift in Sources */,
 				A1EE86E31DBFDE48002E56C8 /* DefaultCardCell.swift in Sources */,
