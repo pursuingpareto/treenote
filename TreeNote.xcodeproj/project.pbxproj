@@ -12,6 +12,9 @@
 		A1E59A791DC3E6DA006B4BF8 /* TreeBrowseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E59A781DC3E6DA006B4BF8 /* TreeBrowseController.swift */; };
 		A1E59A7B1DC3E8FD006B4BF8 /* TreeBrowseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E59A7A1DC3E8FD006B4BF8 /* TreeBrowseCell.swift */; };
 		A1E59A7D1DC3F4C5006B4BF8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E59A7C1DC3F4C5006B4BF8 /* User.swift */; };
+		A1E59A7F1DC41480006B4BF8 /* FormattingHelpController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E59A7E1DC41480006B4BF8 /* FormattingHelpController.swift */; };
+		A1E59A811DC415F6006B4BF8 /* FormattingHelpCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E59A801DC415F6006B4BF8 /* FormattingHelpCell.swift */; };
+		A1E59A831DC41612006B4BF8 /* FormattingHelpCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A1E59A821DC41612006B4BF8 /* FormattingHelpCell.xib */; };
 		A1EE86AD1DBFDD9D002E56C8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE86AC1DBFDD9D002E56C8 /* AppDelegate.swift */; };
 		A1EE86B21DBFDD9D002E56C8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1EE86B01DBFDD9D002E56C8 /* Main.storyboard */; };
 		A1EE86B41DBFDD9D002E56C8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1EE86B31DBFDD9D002E56C8 /* Assets.xcassets */; };
@@ -65,6 +68,9 @@
 		A1E59A781DC3E6DA006B4BF8 /* TreeBrowseController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TreeBrowseController.swift; sourceTree = "<group>"; };
 		A1E59A7A1DC3E8FD006B4BF8 /* TreeBrowseCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TreeBrowseCell.swift; sourceTree = "<group>"; };
 		A1E59A7C1DC3F4C5006B4BF8 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		A1E59A7E1DC41480006B4BF8 /* FormattingHelpController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormattingHelpController.swift; sourceTree = "<group>"; };
+		A1E59A801DC415F6006B4BF8 /* FormattingHelpCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormattingHelpCell.swift; sourceTree = "<group>"; };
+		A1E59A821DC41612006B4BF8 /* FormattingHelpCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FormattingHelpCell.xib; sourceTree = "<group>"; };
 		A1EE86A91DBFDD9D002E56C8 /* TreeNote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TreeNote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1EE86AC1DBFDD9D002E56C8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A1EE86B11DBFDD9D002E56C8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -177,6 +183,7 @@
 				A1E59A7C1DC3F4C5006B4BF8 /* User.swift */,
 				A1EE86FA1DBFF213002E56C8 /* Colors.swift */,
 				A1EE86DC1DBFDDFF002E56C8 /* TreeViewController.swift */,
+				A1E59A7E1DC41480006B4BF8 /* FormattingHelpController.swift */,
 				A1EE87051DC01435002E56C8 /* CardCellDelegate.swift */,
 				A1EE86B01DBFDD9D002E56C8 /* Main.storyboard */,
 				A1E59A781DC3E6DA006B4BF8 /* TreeBrowseController.swift */,
@@ -225,6 +232,8 @@
 				A1EE86E41DBFDE57002E56C8 /* SelectedCardCell.swift */,
 				A1EE86E61DBFDE74002E56C8 /* EditingCardCell.swift */,
 				A1EE86E81DBFDE83002E56C8 /* DefaultCardCell.xib */,
+				A1E59A801DC415F6006B4BF8 /* FormattingHelpCell.swift */,
+				A1E59A821DC41612006B4BF8 /* FormattingHelpCell.xib */,
 				A1EE86EA1DBFDE91002E56C8 /* SelectedCardCell.xib */,
 				A1EE86EC1DBFDEAE002E56C8 /* EditingCardCell.xib */,
 				A1E59A7A1DC3E8FD006B4BF8 /* TreeBrowseCell.swift */,
@@ -320,6 +329,7 @@
 				TargetAttributes = {
 					A1EE86A81DBFDD9D002E56C8 = {
 						CreatedOnToolsVersion = 8.0;
+						DevelopmentTeam = G52N2SS7UN;
 						ProvisioningStyle = Automatic;
 					};
 					A1EE86BC1DBFDD9D002E56C8 = {
@@ -363,6 +373,7 @@
 				A1EE86B71DBFDD9D002E56C8 /* LaunchScreen.storyboard in Resources */,
 				A1EE86B41DBFDD9D002E56C8 /* Assets.xcassets in Resources */,
 				A1EE86B21DBFDD9D002E56C8 /* Main.storyboard in Resources */,
+				A1E59A831DC41612006B4BF8 /* FormattingHelpCell.xib in Resources */,
 				A1EE86E91DBFDE83002E56C8 /* DefaultCardCell.xib in Resources */,
 				A1EE86EB1DBFDE91002E56C8 /* SelectedCardCell.xib in Resources */,
 			);
@@ -540,8 +551,10 @@
 				A1EE86FB1DBFF213002E56C8 /* Colors.swift in Sources */,
 				A1EE86E31DBFDE48002E56C8 /* DefaultCardCell.swift in Sources */,
 				A1EE86DB1DBFDDEA002E56C8 /* Tree.swift in Sources */,
+				A1E59A811DC415F6006B4BF8 /* FormattingHelpCell.swift in Sources */,
 				A1EE87011DC00119002E56C8 /* PagedTableViewControllerDataSource.swift in Sources */,
 				A1EE86F91DBFE81B002E56C8 /* CardCell.swift in Sources */,
+				A1E59A7F1DC41480006B4BF8 /* FormattingHelpController.swift in Sources */,
 				A1EE87021DC00119002E56C8 /* PagedTableViewDelegate.swift in Sources */,
 				A1EE87001DC00119002E56C8 /* PagedTableViewController.swift in Sources */,
 			);
@@ -694,6 +707,7 @@
 			baseConfigurationReference = F4F903209188B6AA1E7F1B1F /* Pods-TreeNote.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = G52N2SS7UN;
 				INFOPLIST_FILE = TreeNote/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Andy.TreeNote;
@@ -707,6 +721,7 @@
 			baseConfigurationReference = 6E084C2095FC66EA47C4D006 /* Pods-TreeNote.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = G52N2SS7UN;
 				INFOPLIST_FILE = TreeNote/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Andy.TreeNote;

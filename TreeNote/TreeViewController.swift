@@ -36,6 +36,8 @@ class TreeViewController: PagedTableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+//        navigationController?.navigationBar.barTintColor = 
     }
     
     override func loadView() {
@@ -170,6 +172,16 @@ class TreeViewController: PagedTableViewController {
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        if let navController = segue.destination as? UINavigationController {
+            let nib = UINib(nibName: "FormattingHelpCell", bundle: nil)
+            if let formattingHelpController = navController.viewControllers.first as? FormattingHelpController {
+                formattingHelpController.tableView.register(nib, forCellReuseIdentifier: FormattingHelpCell.identifier)
+            }
+        }
     }
 }
 
@@ -484,6 +496,13 @@ extension TreeViewController: CardCellDelegate {
     }
     
     func formattingHelpButtonPressed(inCardCell cardCell: CardCell) {
+//        let formattingHelpVC = storyboard?.instantiateViewController(withIdentifier: "formattingHelpController") as! FormattingHelpController
+//        let nib = UINib(nibName: "FormattingHelpCell", bundle: nil)
+//        formattingHelpVC.tableView.register(nib, forCellReuseIdentifier: FormattingHelpCell.identifier)
+        performSegue(withIdentifier: "showFormattingHelp", sender: self)
+//        present(formattingHelpVC, animated: true, completion: {
+//            print("presented formatting help view controller")
+//        })
         print("delegate acknowledges formatting help pressed")
     }
     

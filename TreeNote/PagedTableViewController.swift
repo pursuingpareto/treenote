@@ -89,6 +89,7 @@ class PagedTableViewController: UIPageViewController {
         setViewControllers([orderedViewControllers.first!], direction: .forward, animated: true, completion: nil)
         dataSource = self
         delegate = self
+        
         super.viewDidLoad()
         addInterceptingPanRecognizer()
     }
