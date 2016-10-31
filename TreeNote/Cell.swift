@@ -31,6 +31,12 @@ class Cell: NSObject, NSCoding {
     weak var parent: Cell?
     var children = [Cell]()
     var state : CellState = .unfocused
+    
+    convenience init(withMarkdownText text: String) {
+        self.init()
+        self.text = text
+    }
+    
     func append(cell: Cell) {
         cell.parent = self
         self.children.append(cell)

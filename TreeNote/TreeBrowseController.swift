@@ -65,18 +65,13 @@ class TreeBrowseController: UIViewController {
             // user already has some saved trees.
             trees = userTrees
             if trees.count == 0 {
-                let newTree = Tree(rootCells: [], title: "New Tree")!
-                newTree.populateWithFakeData()
-                trees = [newTree]
+                trees = [User.sharedInstance.exampleTree!, User.sharedInstance.techTree!]
             }
         } else {
-            if let tree = Tree(rootCells: [], title: "Untitled Tree") {
-                tree.populateWithFakeData()
-                trees = [tree]
-            }
+            trees = [User.sharedInstance.exampleTree!, User.sharedInstance.techTree!]
         }
-//        treeTitles.append("My First Tree")
     }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

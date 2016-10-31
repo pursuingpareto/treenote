@@ -43,6 +43,7 @@ class SelectedCardCell: CardCell {
         }
         let down =  Down(markdownString: cell.text)
         try? mainLabel.attributedText = down.toAttributedString()
+        
         backgroundColor = UIColor.white
     }
 }
