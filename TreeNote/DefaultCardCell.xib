@@ -42,9 +42,9 @@
                 <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 <constraints>
                     <constraint firstItem="X6z-Cl-AM6" firstAttribute="centerY" secondItem="Xhr-p5-n9b" secondAttribute="centerY" id="AUk-Sw-YTM"/>
-                    <constraint firstAttribute="bottomMargin" relation="greaterThanOrEqual" secondItem="X6z-Cl-AM6" secondAttribute="bottom" constant="40" id="Nv2-pS-q9B"/>
+                    <constraint firstAttribute="bottomMargin" relation="greaterThanOrEqual" secondItem="X6z-Cl-AM6" secondAttribute="bottom" constant="44" id="Nv2-pS-q9B"/>
                     <constraint firstItem="3xd-Qe-7nO" firstAttribute="top" secondItem="Xhr-p5-n9b" secondAttribute="topMargin" constant="-8" id="azW-Ek-XyM"/>
-                    <constraint firstItem="X6z-Cl-AM6" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Xhr-p5-n9b" secondAttribute="topMargin" constant="40" id="b8a-gk-Nzs"/>
+                    <constraint firstItem="X6z-Cl-AM6" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Xhr-p5-n9b" secondAttribute="topMargin" constant="44" id="b8a-gk-Nzs"/>
                     <constraint firstAttribute="trailingMargin" secondItem="X6z-Cl-AM6" secondAttribute="trailing" constant="40" id="fwG-u2-B18"/>
                     <constraint firstItem="X6z-Cl-AM6" firstAttribute="leading" secondItem="3xd-Qe-7nO" secondAttribute="trailing" constant="8" id="htL-Fh-Tb1"/>
                     <constraint firstAttribute="bottomMargin" secondItem="3xd-Qe-7nO" secondAttribute="bottom" constant="-8" id="hzk-Uy-N2q"/>

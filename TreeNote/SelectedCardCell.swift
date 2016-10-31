@@ -11,35 +11,44 @@ import Down
 
 class SelectedCardCell: CardCell {
     
-    @IBOutlet weak var addRightButton: UIButton!
+    @IBOutlet weak var rightBar: UIToolbar!
+    @IBOutlet weak var bottomBar: UIToolbar!
+    @IBOutlet weak var topBar: UIToolbar!
+    @IBOutlet weak var addRightButton: UIBarButtonItem!
     
-    @IBAction func addCellAbovePressed(_ sender: UIButton) {
+    @IBAction func addCellAbovePressed(_ sender: UIBarButtonItem) {
         delegate.addAboveButtonPressed(inCardCell: self)
     }
     
-    @IBAction func addCellBelowPressed(_ sender: UIButton) {
+    @IBAction func addCellBelowPressed(_ sender: UIBarButtonItem) {
         delegate.addBelowButtonPressed(inCardCell: self)
     }
     
-    @IBAction func addCellRightPressed(_ sender: UIButton) {
+    @IBAction func addCellRightPressed(_ sender: UIBarButtonItem) {
         delegate.addRightButtonPressed(inCardCell: self)
     }
     
-    @IBAction func closeButtonPressed(_ sender: UIButton) {
+    @IBAction func closeButtonPressed(_ sender: UIBarButtonItem) {
         delegate.deleteButtonPressed(inCardCell: self)
     }
     
-    @IBAction func editButtonPressed(_ sender: UIButton) {
+    @IBAction func editButtonPressed(_ sender: UIBarButtonItem) {
         delegate.editButtonPressed(inCardCell: self)
     }
     
     @IBOutlet weak var mainLabel: UILabel!
     
     override func setup(withCell cell: Cell) {
+        rightBar.clipsToBounds = true
+        bottomBar.clipsToBounds = true
+        topBar.clipsToBounds = true
+        print("clips? \(rightBar.clipsToBounds)")
         if cell.children.count == 0 {
-            addRightButton.isHidden = false
+            addRightButton.isEnabled = true
+//            addRightButton.isHidden = false
         } else {
-            addRightButton.isHidden = true
+            addRightButton.isEnabled = false
+//            addRightButton.isHidden = true
         }
         let down =  Down(markdownString: cell.text)
         try? mainLabel.attributedText = down.toAttributedString()
