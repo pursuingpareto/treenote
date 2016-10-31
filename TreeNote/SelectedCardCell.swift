@@ -13,7 +13,6 @@ class SelectedCardCell: CardCell {
     
     @IBOutlet weak var addRightButton: UIButton!
     
-    // TODO - implement all these methods through calls to delegate functions.
     @IBAction func addCellAbovePressed(_ sender: UIButton) {
         delegate.addAboveButtonPressed(inCardCell: self)
     }
@@ -44,7 +43,6 @@ class SelectedCardCell: CardCell {
         }
         let down =  Down(markdownString: cell.text)
         try? mainLabel.attributedText = down.toAttributedString()
-//        mainLabel.text = cell.text
         backgroundColor = UIColor.white
     }
 }

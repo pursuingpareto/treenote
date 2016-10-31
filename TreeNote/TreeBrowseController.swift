@@ -137,10 +137,6 @@ extension TreeBrowseController: UITableViewDelegate {
         return UITableViewCellEditingStyle.delete
     }
     
-//    func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
-//        return "Delete."
-//    }
-    
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         guard editingStyle == .delete else {
             return
@@ -149,14 +145,7 @@ extension TreeBrowseController: UITableViewDelegate {
         tableView.deleteRows(at: [indexPath], with: .automatic)
     }
     
-    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+    func tableView(_ tableView: UITableView, canFocusRowAt indexPath: IndexPath) -> Bool {
         return true
     }
-    
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let title = treeTitles[indexPath.row]
-//        let tree = treeForTitle(title)
-//        performSegue(withIdentifier: <#T##String#>, sender: <#T##Any?#>)
-//        
-//    }
 }

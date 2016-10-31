@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -13,10 +16,11 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="250"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" multipleTouchEnabled="YES" contentMode="center" tableViewCell="u72-ke-UBt" id="Ze3-9Q-r16">
-                <frame key="frameInset" width="375" height="249"/>
+                <rect key="frame" x="0.0" y="0.0" width="375" height="249"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B93-26-QSL">
+                        <rect key="frame" x="157" y="0.0" width="62" height="44"/>
                         <color key="backgroundColor" red="0.6142311692237854" green="0.92298650741577148" blue="0.61190515756607056" alpha="0.19553413120567381" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="44" id="hRN-Uv-TQQ"/>
@@ -29,6 +33,7 @@
                         </connections>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C21-5y-3jL">
+                        <rect key="frame" x="331" y="0.0" width="44" height="44"/>
                         <color key="backgroundColor" red="0.6142311692237854" green="0.92298650741577148" blue="0.61190515756607056" alpha="0.19553413120567381" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="44" id="Zpk-kU-ZcR"/>
@@ -41,6 +46,7 @@
                         </connections>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vlu-cX-opS">
+                        <rect key="frame" x="331" y="208" width="44" height="44"/>
                         <color key="backgroundColor" red="0.6142311692237854" green="0.92298650741577148" blue="0.61190515756607056" alpha="0.19553413120567381" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="44" id="NWH-Na-IjF"/>
@@ -53,6 +59,7 @@
                         </connections>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4cV-qj-ha0">
+                        <rect key="frame" x="331" y="103" width="44" height="44"/>
                         <color key="backgroundColor" red="0.6142311692237854" green="0.92298650741577148" blue="0.61190515756607056" alpha="0.19553413120567381" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="44" id="dK7-nT-ueN"/>
@@ -64,8 +71,8 @@
                             <action selector="addCellRightPressed:" destination="u72-ke-UBt" eventType="touchUpInside" id="ZoD-TW-Vb5"/>
                         </connections>
                     </button>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vt8-gL-guv">
-                        <frame key="frameInset" minX="14" minY="58" width="303" height="50"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vt8-gL-guv">
+                        <rect key="frame" x="14" y="114.5" width="303" height="20.5"/>
                         <attributedString key="attributedText">
                             <fragment content="Label">
                                 <attributes>
@@ -76,12 +83,14 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="g0s-hU-kf6">
+                        <rect key="frame" x="0.0" y="0.0" width="6" height="250"/>
                         <color key="backgroundColor" red="0.6142311692237854" green="0.92298650741577148" blue="0.61190515756607056" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="6" id="CcV-Xd-uGe"/>
                         </constraints>
                     </view>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2M4-xU-VJr">
+                        <rect key="frame" x="160" y="208" width="55" height="44"/>
                         <color key="backgroundColor" red="0.6142311692237854" green="0.92298650741577148" blue="0.61190515756607056" alpha="0.19553413120567381" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="55" id="miD-kw-ssX"/>

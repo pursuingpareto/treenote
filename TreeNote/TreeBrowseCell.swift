@@ -10,5 +10,4 @@ import UIKit
 
 class TreeBrowseCell: UITableViewCell {
     static let identifier = "treeBrowseCell"
-    
 }

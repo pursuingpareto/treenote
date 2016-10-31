@@ -62,13 +62,4 @@ class Cell: NSObject, NSCoding {
     }
 }
 
-//extension Cell: Equatable {
-//    static func ==(lhs: Cell, rhs: Cell) -> Bool {
-//        if lhs.parent == rhs.parent && lhs.text == rhs.text && lhs.children.count == rhs.children.count {
-//            return true
-//        } else {
-//            return false
-//        }
-//    }
-//}
 

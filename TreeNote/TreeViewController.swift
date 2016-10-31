@@ -36,15 +36,11 @@ class TreeViewController: PagedTableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-//        navigationController?.navigationBar.barTintColor = 
     }
     
     override func loadView() {
         ptvcDataSource = self
         ptvcDelegate = self
-//        tree = Tree(rootCells: [], title: "Untitled Tree")!
-//        tree.populateWithFakeData()
         if tree.rootCells.count == 0 {
             tree.populateWithFakeData()
         }
@@ -109,13 +105,10 @@ class TreeViewController: PagedTableViewController {
     fileprivate func addCell(toIndexPath: IndexPath, toPage: Int, fromIndexPath: IndexPath, fromPage: Int, withParent parent: Cell?) -> EditingCardCell? {
         print("adding cell")
         guard let cell = getCell(forIndexPath: fromIndexPath, onPage: fromPage) else {
-//            print("error retrieving cell while adding new cell")
             return nil
         }
         let newCell = Cell()
-//        newCell.parent = parent
         newCell.state = .editing
-//        newCell.text = "example text"
         cell.state = .focused
         selectedCell = nil
         selectedParentCell = nil
@@ -223,12 +216,6 @@ extension TreeViewController: PagedTableViewControllerDelegate {
             return
         }
         var indexPathsNeedingUpdate = [indexPath]
-//        for c in [selectedCell, selectedParentCell, selectedChildCell] {
-//            if c != nil {
-//                indexPathsNeedingUpdate.append(indexPath)
-//            }
-//        }
-        
         var sectionsNeedingUpdate = IndexSet()
         sectionsNeedingUpdate.insert(indexPath.section)
         let previouslySelected = selectedCell
@@ -262,22 +249,15 @@ extension TreeViewController: PagedTableViewControllerDelegate {
                 sectionsNeedingUpdate.insert(previousIndexPath.section)
             }
         }
-        
         let nextState = nextStateForSelection(ofCell: cell)
         guard nextState != cell.state else {
             return
         }
-
-//        if let currentSelection = selectedCellForPage[page] {
-//            indexPathsToUpdate.append(cu)
-//        }
         cell.state = nextState
         
         currentTableView.beginUpdates()
         currentTableView.reloadSections(sectionsNeedingUpdate, with: .automatic)
         currentTableView.endUpdates()
-//        currentTableView.scrollToRow(at: indexPath, at: .top, animated: false)
-        
     }
     
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didDeselectRowAt indexPath: IndexPath, onPage page: Int) {
@@ -293,19 +273,6 @@ extension TreeViewController: PagedTableViewControllerDelegate {
     // TODO - implement this better. Probably require a height property for card cells
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, heightForRowAt indexPath: IndexPath, onPage page: Int) -> CGFloat {
         return UITableViewAutomaticDimension
-//        guard let cell = getCell(forIndexPath: indexPath, onPage: page) else {
-//            print("invalid index path")
-//            return 50
-//        }
-//        
-//        switch cell.state {
-//        case .selected:
-//            return 250
-//        case .editing:
-//            return 200
-//        default:
-//            return 90
-//        }
     }
     
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didFinishAnimatingTransition finished: Bool, toPage: Int) {
@@ -315,8 +282,6 @@ extension TreeViewController: PagedTableViewControllerDelegate {
             for (rowNum, cell) in section.enumerated() {
                 if cell.state == .editing {
                     let indexPath = IndexPath(row: rowNum, section: sectionNum)
-                    
-                    
                     DispatchQueue.global(qos: .userInitiated).async {
                         self.currentTableView.reloadData()
                         DispatchQueue.main.async {
@@ -396,17 +361,11 @@ extension TreeViewController: CardCellDelegate {
         self.currentTableView.beginUpdates()
         var indexSet = IndexSet()
         indexSet.insert(indexPath.section)
-//        self.currentTableView.reloadRows(at: [indexPath], with: .automatic)
         self.currentTableView.reloadSections(indexSet, with: .automatic)
         self.currentTableView.endUpdates()
         currentTableView.scrollToRow(at: indexPath, at: .top, animated: true)
         DispatchQueue.global(qos: .userInitiated).async {
-
-//            self.currentTableView.reloadData()
             DispatchQueue.main.async {
-//                self.currentTableView.beginUpdates()
-//                self.currentTableView.reloadRows(at: [indexPath], with: .automatic)
-//                self.currentTableView.endUpdates()
                 guard let newCell = self.cellForRowAt(indexPath: indexPath, onPage: self.currentPage) else {
                     print("couldn't even get a measely uitableview cell")
                     return
@@ -420,8 +379,6 @@ extension TreeViewController: CardCellDelegate {
             }
             
         }
-        
-
     }
     
     func addAboveButtonPressed(inCardCell cardCell: SelectedCardCell) {
@@ -464,12 +421,11 @@ extension TreeViewController: CardCellDelegate {
         let nextPage = currentPage + 1
         
         let newCellIndexPath = indexPathForNewChildOfCell(cell, onPage: currentPage)
-        guard let editCell = addCell(toIndexPath: newCellIndexPath, toPage: nextPage, fromIndexPath: indexPath, fromPage: currentPage, withParent: cell) else {
+        guard addCell(toIndexPath: newCellIndexPath, toPage: nextPage, fromIndexPath: indexPath, fromPage: currentPage, withParent: cell) != nil else {
             print("ERROR couldn't retrieve edit cell while adding right!")
             return
         }
         scrollRight(completion: nil)
-//        editCell.markdownTextView.becomeFirstResponder()
         print("delegate acknowledges add right")
     }
     
@@ -496,13 +452,7 @@ extension TreeViewController: CardCellDelegate {
     }
     
     func formattingHelpButtonPressed(inCardCell cardCell: CardCell) {
-//        let formattingHelpVC = storyboard?.instantiateViewController(withIdentifier: "formattingHelpController") as! FormattingHelpController
-//        let nib = UINib(nibName: "FormattingHelpCell", bundle: nil)
-//        formattingHelpVC.tableView.register(nib, forCellReuseIdentifier: FormattingHelpCell.identifier)
         performSegue(withIdentifier: "showFormattingHelp", sender: self)
-//        present(formattingHelpVC, animated: true, completion: {
-//            print("presented formatting help view controller")
-//        })
         print("delegate acknowledges formatting help pressed")
     }
     

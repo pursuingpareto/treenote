@@ -57,12 +57,11 @@ class FormattingHelpController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return data.count
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
+
         return data[section].cellTexts.count
     }
 
@@ -73,10 +72,7 @@ class FormattingHelpController: UITableViewController {
         print("indexPath is \(indexPath). text is \(text). rawLabel is \(cell.rawLabel)")
         cell.rawLabel.text = text
         
-        let down = Down(markdownString: text)
-        var attributedText: NSAttributedString? = nil
-        attributedText = try? down.toAttributedString()
-        
+        let down = Down(markdownString: text)        
         try? cell.renderedLabel.attributedText = down.toAttributedString()
         return cell
     }

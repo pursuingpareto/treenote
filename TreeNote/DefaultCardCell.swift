@@ -16,7 +16,6 @@ class DefaultCardCell: CardCell {
     override func setup(withCell cell: Cell) {
         let down =  Down(markdownString: cell.text)
         try? mainLabel.attributedText = down.toAttributedString()
-//        mainLabel.text = cell.text
         switch cell.state {
         case .focused:
             backgroundColor = UIColor.white

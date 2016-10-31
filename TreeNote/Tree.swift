@@ -19,7 +19,6 @@ struct PropertyKey {
 class Tree: NSObject, NSCoding {
     
     var title = "Untitled Tree"
-//    private(set) var rootCells: [Cell] = [Cell()]
     fileprivate(set) var rootCells = [Cell]()
     // TODO - implement this to actually return maxDepth...
     private(set) var maxDepth = 2

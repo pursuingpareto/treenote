@@ -11,12 +11,10 @@ import UIKit
 class EditingCardCell: CardCell {
     
     @IBAction func doneButtonPressed(_ sender: UIButton) {
-        // TODO - implement by calling delegate method.
         delegate.doneEditingButtonPressed(inCardCell: self)
     }
     
     @IBAction func formattingHelpPressed(_ sender: UIButton) {
-        // TODO - implement as modal
         delegate.formattingHelpButtonPressed(inCardCell: self)
     }
     
