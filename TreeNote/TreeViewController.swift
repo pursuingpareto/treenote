@@ -21,7 +21,7 @@ class TreeViewController: PagedTableViewController {
         var depth = 0
         var data = [[[Cell]]]()
         while true {
-            
+//            print("accessing tree data")
             let sectionedCells = tree.getSectionedCells(atDepth: depth)
             guard !sectionedCells.isEmpty else {
                 return data
@@ -161,6 +161,46 @@ class TreeViewController: PagedTableViewController {
             }
             return editCell
         }
+    }
+    
+    // TODO - fix this implementation if it becomes problematic. It scales poorly with tree size.
+    fileprivate func deleteDescendents(ofParent parent: Cell, onPage page: Int) {
+        print("deleting descendents of parent with text \(parent.text) on page \(page)")
+        let nextPage = page+1
+        if nextPage >= tableViews.count {
+            return
+        }
+        let sections = treeData[nextPage]
+        print("there are \(sections.count) sections on page \(nextPage)")
+        for (secNum, section) in sections.enumerated() {
+            let representativeCell = section.first
+            if representativeCell?.parent != parent {
+                continue
+            }
+            var childrenToDelete = [Cell]()
+            for cell in section {
+//                childrenToDelete.append(contentsOf: cell.children)
+                if cell.children.count == 0 {
+                    tree.delete(cell: cell)
+                } else {
+                    childrenToDelete.append(cell)
+                }
+            }
+            if childrenToDelete.count > 0 {
+                for child in childrenToDelete {
+                    deleteDescendents(ofParent: child, onPage: nextPage)
+                    tree.delete(cell: child)
+                }
+            }
+            
+            let table = tableViews[nextPage]
+            var indexSet = IndexSet()
+            indexSet.insert(secNum)
+            print("  deleting section \(secNum) on page \(nextPage)")
+            table.deleteSections(indexSet, with: .none)
+
+        }
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -457,6 +497,25 @@ extension TreeViewController: CardCellDelegate {
     }
     
     func deleteButtonPressed(inCardCell cardCell: SelectedCardCell) {
-        print("delegate acknowledges delete button pressed")
+        guard let indexPath = currentTableView.indexPath(for: cardCell) else {
+            print("error getting index path while deleting")
+            return
+        }
+        guard let cell = getCell(forIndexPath: indexPath, onPage: currentPage) else {
+            print("error getting cell while deleting")
+            return
+        }
+        var pageNum = currentPage + 1
+        while pageNum < tableViews.count-1 {
+            
+            let table = tableViews[pageNum]
+            table.reloadData()
+            pageNum += 1
+        }
+        deleteDescendents(ofParent: cell, onPage: currentPage)
+        currentTableView.beginUpdates()
+        tree.delete(cell: cell)
+        currentTableView.deleteRows(at: [indexPath], with: .automatic)
+        currentTableView.endUpdates()
     }
 }

@@ -16,8 +16,12 @@ struct PropertyKey {
     static let cellParentKey = "cellParent"
 }
 
+protocol TreeUIDelegate {
+    func didDeleteCells(sections: IndexSet, onPage page: Int)
+}
+
 class Tree: NSObject, NSCoding {
-    
+    var delegate: TreeUIDelegate? = nil
     var title = "Untitled Tree"
     fileprivate(set) var rootCells = [Cell]()
     // TODO - implement this to actually return maxDepth...
@@ -62,8 +66,8 @@ class Tree: NSObject, NSCoding {
             children = child!.children
         }
         
-        let lastIndex = pathToCell.popLast()!
-        let deleted = children.remove(at: lastIndex)
+        let indexOfCellToRemove = pathToCell.popLast()!
+        let deleted = children.remove(at: indexOfCellToRemove)
         if child != nil {
             child!.children = children
         } else {

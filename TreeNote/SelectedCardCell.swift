@@ -42,7 +42,6 @@ class SelectedCardCell: CardCell {
         rightBar.clipsToBounds = true
         bottomBar.clipsToBounds = true
         topBar.clipsToBounds = true
-        print("clips? \(rightBar.clipsToBounds)")
         if cell.children.count == 0 {
             addRightButton.isEnabled = true
 //            addRightButton.isHidden = false
