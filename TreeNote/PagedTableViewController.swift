@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Down
 
 class PagedTableViewController: UIPageViewController {
     
@@ -23,12 +24,13 @@ class PagedTableViewController: UIPageViewController {
     public func dequeueReusableCellWithIdentifier(_ identifier: String, forCellAtIndexPath indexPath: IndexPath, onPage page: Int) -> UITableViewCell? {
         let viewController = self.orderedViewControllers[page]
         let tableView = viewController.tableView!
-        return tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
+        return tableView.dequeueReusableCell(withIdentifier: identifier)
+//        return tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
     }
     
     public func cellForRowAt(indexPath : IndexPath, onPage page: Int) -> UITableViewCell? {
         let tableView = self.orderedViewControllers[page].tableView!
-        tableView.reloadRows(at: [indexPath], with: .none)
+//        tableView.reloadRows(at: [indexPath], with: .none)
         return tableView.cellForRow(at: indexPath)
 
     }
@@ -68,7 +70,7 @@ class PagedTableViewController: UIPageViewController {
     }
     public var tableViews = [UITableView]()
     fileprivate var orderedViewControllers = [UITableViewController]()
-    fileprivate var indexPathOfLastSwipe: IndexPath?
+    public var indexPathOfLastSwipe: IndexPath?
     public fileprivate(set) var currentPage: Int = 0 {
         didSet {
             previousPage = oldValue
@@ -114,7 +116,7 @@ class PagedTableViewController: UIPageViewController {
         tableView.allowsSelection = true
         tableView.allowsMultipleSelection = false
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 60.0
+        tableView.estimatedRowHeight = 250.0
         if let reuseIdentifiers = ptvcDelegate?.reuseIdentifiersToRegister?(forTableViewOnPage: page) {
             //                for (identifier, cellClass) in reuseIdentifiers {
             //                    tableView.register(cellClass, forCellReuseIdentifier: identifier)
@@ -137,6 +139,7 @@ class PagedTableViewController: UIPageViewController {
         for v in view.subviews {
             if v.isKind(of: UIScrollView.self) {
                 let scrollView = v as! UIScrollView
+                scrollView.delaysContentTouches = false
                 let panRec = UIPanGestureRecognizer(target: self, action: nil)
                 panRec.delegate  = self
                 scrollView.addGestureRecognizer(panRec)
@@ -195,19 +198,22 @@ extension PagedTableViewController: UIPageViewControllerDelegate {
             return
         }
         indexPathsOfSelectedCells.removeAll()
-        currentPage = nextPage
-        print("last swipe was at \(indexPathOfLastSwipe)")
-        if let scrollPosition = self.ptvcDelegate?.pagedTableViewController?(self, scrollPositionForTransitionToPage: nextPage, fromPage: previousPage!, withSwipeAt: self.indexPathOfLastSwipe) {
+        ptvcDelegate?.pagedTableViewController?(self, willTransition: nextPage, fromPage: currentPage)
+        if let scrollPosition = ptvcDelegate?.pagedTableViewController?(self, scrollPositionForTransitionToPage: nextPage, fromPage: previousPage!, withSwipeAt: indexPathOfLastSwipe) {
             nextViewController.tableView.scrollToRow(at: scrollPosition, at: .top, animated: true)
         }
+//        nextViewController.tableView.reloadData()
+//        currentPage = nextPage
+//        if let scrollPosition = self.ptvcDelegate?.pagedTableViewController?(self, scrollPositionForTransitionToPage: nextPage, fromPage: previousPage!, withSwipeAt: self.indexPathOfLastSwipe) {
+//            nextViewController.tableView.scrollToRow(at: scrollPosition, at: .top, animated: true)
+//        }
+        
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        let page = orderedViewControllers.index(of: currentViewController)!
-        if page != currentPage {
-            currentPage = page
-        }
-        self.ptvcDelegate?.pagedTableViewController?(self, didFinishAnimatingTransition: finished, toPage: currentPage)
+        currentPage = orderedViewControllers.index(of: currentViewController)!
+        let fromPage: Int = completed ? previousPage! : currentPage
+        self.ptvcDelegate?.pagedTableViewController?(self, didFinishAnimatingTransition: finished, toPage: currentPage, fromPage: fromPage, transitionCompleted: completed)
     }
 }
 
@@ -245,6 +251,19 @@ extension PagedTableViewController: UITableViewDelegate {
         }
     }
     
+//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        guard let title = ptvcDelegate?.pagedTableViewController?(self, titleForHeaderIn: section, onPage: pageNumber(of: tableView)) else {
+//            return nil
+//        }
+//        let down = Down(markdownString: title)
+//        
+//        let width = tableView.bounds.width
+//        let view = UITableViewHeaderFooterView(frame: CGRect(x: 0, y: 0, width: width, height: 100))
+//        view.contentView
+//        try? view.textLabel?.text = down.toAttributedString().string
+//        return view
+//    }
+//    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let pageNumber = self.pageNumber(of: tableView)
         indexPathsOfSelectedCells.insert(indexPath)
@@ -278,6 +297,7 @@ extension PagedTableViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+//        return false
         let pageNumber = self.pageNumber(of: tableView)
         guard let should = self.ptvcDelegate?.pagedTableViewController?(self, shouldHighlightRowAt: indexPath, onPage: pageNumber) else {
             return false
@@ -289,17 +309,18 @@ extension PagedTableViewController: UITableViewDelegate {
         if let height = self.ptvcDelegate?.pagedTableViewController?(self, heightForRowAt: indexPath, onPage: currentPage) {
             return height
         } else {
-            return 60.0
+            return UITableViewAutomaticDimension
         }
     }
     
     func tableView(_ tableView: UITableView, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool {
-        return indexPathsOfSelectedCells.contains(indexPath)
+//        return indexPathsOfSelectedCells.contains(indexPath)
+        return false
     }
     
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: IndexPath) -> Bool {
 //        return indexPathsOfSelectedCells.contains(indexPath)
-        return true
+        return false
     }
     
     func tableView(_ tableView: UITableView, indentationLevelForRowAt indexPath: IndexPath) -> Int {
@@ -324,6 +345,10 @@ extension PagedTableViewController: UITableViewDelegate {
         } else {
             return .none
         }
+    }
+    
+    func tableView(_ tableView: UITableView, canFocusRowAt indexPath: IndexPath) -> Bool {
+        return false
     }
     
 //    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

@@ -8,10 +8,25 @@
 
 import UIKit
 
+enum TreeFocusMode {
+    case asParentOfChild    // set on transitions UP / left in the hierarchy
+    case asChildrenOfParent // set on transitions DOWN / right in the hierarchy
+    case asSiblingsOfCell   // set on selections within the hierarchy
+    case asInitialRootView  // initial setting
+}
+
+enum TransitionMode {
+    case swipeToChildren
+    case swipeToParents
+    case addCell
+    case none
+}
+
 class TreeViewController: PagedTableViewController {
     
     var tree: Tree!
-    
+    var focusMode = TreeFocusMode.asInitialRootView
+    var currentTransitionMode: TransitionMode = .none
     var selectedCell: Cell? = nil
     var selectedParentCell: Cell? = nil
     var selectedChildCell: Cell? = nil
@@ -21,7 +36,6 @@ class TreeViewController: PagedTableViewController {
         var depth = 0
         var data = [[[Cell]]]()
         while true {
-//            print("accessing tree data")
             let sectionedCells = tree.getSectionedCells(atDepth: depth)
             guard !sectionedCells.isEmpty else {
                 return data
@@ -41,22 +55,17 @@ class TreeViewController: PagedTableViewController {
     override func loadView() {
         ptvcDataSource = self
         ptvcDelegate = self
-        if tree.rootCells.count == 0 {
-            tree.populateWithFakeData()
-        }
         super.loadView()
     }
     
     fileprivate func getCell(forIndexPath indexPath: IndexPath, onPage page: Int) -> Cell? {
-        print("getting cell on page \(page) at indexPath \(indexPath)")
         return treeData[page][indexPath.section][indexPath.row]
     }
     
     fileprivate func nextStateForSelection(ofCell cell: Cell) -> CellState {
         switch cell.state {
         case .selected:
-            return stateForCell(cell: cell)
-//            return .unfocused
+            return .focused
         case .editing:
             return .editing
         default:
@@ -65,10 +74,15 @@ class TreeViewController: PagedTableViewController {
     }
     
     fileprivate func stateForCell(cell: Cell) -> CellState {
-        if cell.parent == selectedParentCell || cell.parent == selectedCell?.parent || cell == selectedChildCell?.parent {
+        switch focusMode {
+        case .asInitialRootView:
             return CellState.focused
-        } else {
-            return CellState.unfocused
+        case .asChildrenOfParent:
+            return cell.parent == selectedParentCell ? CellState.focused : CellState.unfocused
+        case .asParentOfChild:
+            return cell == selectedChildCell?.parent ? CellState.focused : CellState.unfocused
+        case .asSiblingsOfCell:
+            return cell.parent == selectedCell?.parent ? CellState.focused : CellState.unfocused
         }
     }
     
@@ -110,9 +124,9 @@ class TreeViewController: PagedTableViewController {
         let newCell = Cell()
         newCell.state = .editing
         cell.state = .focused
-        selectedCell = nil
-        selectedParentCell = nil
-        selectedChildCell = nil
+//        selectedCell = newCell
+//        selectedParentCell = nil
+//        selectedChildCell = nil
         if parent != nil && toPage != fromPage {
             if toPage > fromPage {
                 selectedParentCell = getCell(forIndexPath: fromIndexPath, onPage: fromPage)
@@ -231,6 +245,7 @@ extension TreeViewController: PagedTableViewControllerDataSource {
         return treeData[page][section].count
     }
     
+    // TODO - fix so only one card can be editing or selected
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, cellForRowAt indexPath: IndexPath, onPage page: Int) -> UITableViewCell {
         let cell = treeData[page][indexPath.section][indexPath.row]
         var cardCell: CardCell
@@ -246,6 +261,8 @@ extension TreeViewController: PagedTableViewControllerDataSource {
         }
         cardCell.delegate = self
         cardCell.setup(withCell: cell)
+        cardCell.setNeedsLayout()
+//        cardCell.layoutIfNeeded()
         return cardCell
     }
 }
@@ -255,56 +272,119 @@ extension TreeViewController: PagedTableViewControllerDelegate {
         guard let cell = getCell(forIndexPath: indexPath, onPage: page) else {
             return
         }
-        var indexPathsNeedingUpdate = [indexPath]
+        print("did select row at \(indexPath)")
         var sectionsNeedingUpdate = IndexSet()
         sectionsNeedingUpdate.insert(indexPath.section)
-        let previouslySelected = selectedCell
-        if selectedParentCell != nil {
-            for (secNum, sec) in treeData[page].enumerated() {
-                if sec.first?.parent == selectedParentCell {
-                    sectionsNeedingUpdate.insert(secNum)
+        defer {
+            focusMode = .asSiblingsOfCell
+            if selectedCell != nil {
+                selectedCell!.state = stateForCell(cell: selectedCell!)
+            }
+            selectedCell = cell
+            selectedChildCell = nil
+            selectedParentCell = nil
+            let nextState = nextStateForSelection(ofCell: cell)
+            cell.state = nextState
+            currentTableView.beginUpdates()
+            print("sections needing update are \(sectionsNeedingUpdate)")
+            currentTableView.reloadSections(sectionsNeedingUpdate, with: .fade)
+            currentTableView.endUpdates()
+            currentTableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        }
+        
+        // add additional sections to sectionsNeedingUpdate as necessary.
+        switch focusMode {
+        case .asSiblingsOfCell:
+            if selectedCell != nil && selectedCell!.parent != cell.parent {
+                if let selectedIndexPath = indexPathForCell(cell: selectedCell!, onPage: currentPage) {
+                    sectionsNeedingUpdate.insert(selectedIndexPath.section)
+                } else {
+                    print("Error getting selectedIndexPath for selectedCell \(selectedCell)")
                 }
             }
-            selectedParentCell = nil
-        }
-        
-        if selectedChildCell != nil && selectedChildCell?.parent != nil{
-            if let parentIndexPath = indexPathForCell(cell: selectedChildCell!.parent!, onPage: page) {
-                sectionsNeedingUpdate.insert(parentIndexPath.section)
-                return
-            } else {
-                print("couldn't get a parent index path!")
+        case .asChildrenOfParent:
+            for (secNum, section) in treeData[currentPage].enumerated() {
+                let representativeCell = section.first
+                if representativeCell?.parent == selectedParentCell {
+                    sectionsNeedingUpdate.insert(secNum)
+                    break
+                }
             }
-            selectedChildCell = nil
-        }
-        
-        selectedCell = cell
-        selectedChildCell = nil
-        selectedParentCell = nil
-        if previouslySelected != nil && previouslySelected != cell {
-            previouslySelected!.state = stateForCell(cell: previouslySelected!)
-            if let previousIndexPath = indexPathForCell(cell: previouslySelected!, onPage: page) {
-                print("previous indexPath is \(previousIndexPath)")
-                indexPathsNeedingUpdate.append(previousIndexPath)
-                sectionsNeedingUpdate.insert(previousIndexPath.section)
+        case .asParentOfChild:
+            guard let parentCell = selectedChildCell?.parent else {
+                print("error getting parent cell")
+                break
             }
+            guard let parentIndexPath = indexPathForCell(cell: parentCell, onPage: currentPage) else {
+                print("error getting parentIndexPath for parentCell \(parentCell)")
+                break
+            }
+            sectionsNeedingUpdate.insert(parentIndexPath.section)
+        default:
+            print("don't need to add any sections for update.")
         }
-        let nextState = nextStateForSelection(ofCell: cell)
-        guard nextState != cell.state else {
-            return
-        }
-        cell.state = nextState
+        focusMode = .asSiblingsOfCell
         
-        currentTableView.beginUpdates()
-        currentTableView.reloadSections(sectionsNeedingUpdate, with: .automatic)
-        currentTableView.endUpdates()
+//        var indexPathsNeedingUpdate = [indexPath]
+        
+//        let previouslySelected = selectedCell
+//        if selectedParentCell != nil {
+//            for (secNum, sec) in treeData[page].enumerated() {
+//                if sec.first?.parent == selectedParentCell {
+//                    sectionsNeedingUpdate.insert(secNum)
+//                }
+//            }
+//            selectedParentCell = nil
+//        }
+//        // todo - fix this up so it's more clear what's happening
+//        if selectedChildCell != nil && selectedChildCell?.parent != nil{
+//            if let parentIndexPath = indexPathForCell(cell: selectedChildCell!.parent!, onPage: page) {
+//                sectionsNeedingUpdate.insert(parentIndexPath.section)
+//            } else {
+//                print("couldn't get a parent index path!")
+//                return
+//            }
+//            selectedChildCell = nil
+//        }
+//        
+//        selectedCell = cell
+//        selectedChildCell = nil
+//        selectedParentCell = nil
+//        if previouslySelected != nil && previouslySelected != cell {
+//            previouslySelected!.state = stateForCell(cell: previouslySelected!)
+//            if let previousIndexPath = indexPathForCell(cell: previouslySelected!, onPage: page) {
+//                indexPathsNeedingUpdate.append(previousIndexPath)
+//                sectionsNeedingUpdate.insert(previousIndexPath.section)
+//            }
+//        }
+        
     }
+//    func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath, onPage page: Int) {
+//        guard let cardCell = cell as? CardCell else {
+//            return
+//        }
+//        let dataCell = treeData[page][indexPath.section][indexPath.row]
+//        cardCell.setup(withCell: dataCell)
+//        cardCell.layoutIfNeeded()
+//    }
+//    func pagedTableViewController(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath ) {
+//        guard let page = tableViews.index(of: tableView) else {
+//            return
+//        }
+//        guard let cardCell = cellForRowAt(indexPath: indexPath, onPage: page) as? CardCell else {
+//            return
+//        }
+//        guard let cell = getCell(forIndexPath: indexPath, onPage: page) else {
+//            return
+//        }
+//        cardCell.setup(withCell: cell)
+//    }
     
-    func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didDeselectRowAt indexPath: IndexPath, onPage page: Int) {
-        print("  deselecting")
-        let cell = getCell(forIndexPath: indexPath, onPage: page)
-        print("deselected cell with text \(cell?.text)")
-    }
+//    func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didDeselectRowAt indexPath: IndexPath, onPage page: Int) {
+//        print("  deselecting")
+//        let cell = getCell(forIndexPath: indexPath, onPage: page)
+//        print("deselected cell with text \(cell?.text)")
+//    }
     
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, shouldHighlightRowAt indexPath: IndexPath, onPage page: Int) -> Bool {
         return true
@@ -315,28 +395,140 @@ extension TreeViewController: PagedTableViewControllerDelegate {
         return UITableViewAutomaticDimension
     }
     
-    func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didFinishAnimatingTransition finished: Bool, toPage: Int) {
-        print("did finish editing")
-        let sections = treeData[toPage]
-        for (sectionNum, section) in sections.enumerated() {
-            for (rowNum, cell) in section.enumerated() {
-                if cell.state == .editing {
-                    let indexPath = IndexPath(row: rowNum, section: sectionNum)
-                    DispatchQueue.global(qos: .userInitiated).async {
-                        self.currentTableView.reloadData()
-                        DispatchQueue.main.async {
-                            guard let editCell = self.cellForRowAt(indexPath: indexPath, onPage: toPage) as? EditingCardCell else {
-                                let cell = self.getCell(forIndexPath: indexPath, onPage: toPage)
-                                print("cell at \(indexPath) on page \(toPage) has state \(cell?.state) and text \(cell?.text)")
-                                return
-                            }
-                            print("GOT EDIT CELL with text \(editCell.markdownTextView.text)")
-                            editCell.markdownTextView.becomeFirstResponder()
-                        }
-                    }
-                }
+    // TODO - use focusMode to handle focusing
+    func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didFinishAnimatingTransition finished: Bool, toPage: Int, fromPage: Int, transitionCompleted completed: Bool) {
+        print("didFinishAnimatingTransition \(currentTransitionMode)")
+        defer {
+            if currentTransitionMode != .addCell {
+                selectedCell = nil
+            }
+            currentTransitionMode = .none
+            indexPathOfLastSwipe = nil
+            
+            
+        }
+        guard completed else {
+            return
+        }
+//        switch currentTransitionMode {
+//        case .swipeToChildren:
+//            focusMode = .asChildrenOfParent
+//            if let swipedCell = getCell(forIndexPath: indexPathOfLastSwipe!, onPage: fromPage) {
+//                selectedParentCell = swipedCell
+//                selectedChildCell = nil
+//            } else {
+//                print("error getting Swiped cell.")
+//            }
+//        case .addCell:
+//            focusMode = .asChildrenOfParent
+//        case .swipeToParents:
+//            focusMode = .asParentOfChild
+//            if let swipedCell = getCell(forIndexPath: indexPathOfLastSwipe!, onPage: fromPage) {
+//                selectedChildCell = swipedCell
+//                selectedParentCell = nil
+//            } else {
+//                print("error getting Swiped cell.")
+//            }
+//        default:
+//            print("ERROR, transition mode shouldn't be none after successful transition.")
+//        }
+//        let sections = treeData[toPage]
+//        for (sectionNum, section) in sections.enumerated() {
+//            for (rowNum, cell) in section.enumerated() {
+//                if cell.state == .editing {
+//                    let indexPath = IndexPath(row: rowNum, section: sectionNum)
+//                    DispatchQueue.global(qos: .userInitiated).async {
+//                        self.currentTableView.reloadData()
+//                        DispatchQueue.main.async {
+//                            guard let editCell = self.cellForRowAt(indexPath: indexPath, onPage: toPage) as? EditingCardCell else {
+//                                let cell = self.getCell(forIndexPath: indexPath, onPage: toPage)
+//                                print("cell at \(indexPath) on page \(toPage) has state \(cell?.state) and text \(cell?.text)")
+//                                return
+//                            }
+//                            print("GOT EDIT CELL with text \(editCell.markdownTextView.text)")
+//                            editCell.markdownTextView.becomeFirstResponder()
+//                        }
+//                    }
+//                }
+//            }
+//        }
+    }
+    
+    func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, willTransition toPage: Int, fromPage: Int) {
+        if currentTransitionMode != .addCell {
+            currentTransitionMode = (toPage > fromPage) ? .swipeToChildren : .swipeToParents
+        }
+        // do necessary updates for fromPage tableView and prepare toPage data
+        var indexPathsToUpdateOnCurrentPage: [IndexPath] = []
+        var nextFocusMode = focusMode
+        defer {
+            selectedCell?.state = .focused
+//            selectedCell = nil
+            var previousFocusMode = focusMode
+            focusMode = nextFocusMode
+            let nextTableView = tableViews[toPage]
+            nextTableView.reloadData()
+            DispatchQueue.main.async {
+                nextFocusMode = self.focusMode
+                self.focusMode = previousFocusMode
+                self.currentTableView.beginUpdates()
+                self.currentTableView.reloadRows(at: indexPathsToUpdateOnCurrentPage, with: .automatic)
+                self.currentTableView.endUpdates()
+                self.focusMode = nextFocusMode
             }
         }
+        if indexPathOfLastSwipe != nil {
+            indexPathsToUpdateOnCurrentPage.append(indexPathOfLastSwipe!)
+        }
+        labelpoint: if selectedCell != nil {
+            guard let selected = selectedCell else {
+                break labelpoint
+            }
+            guard let selectedIndexPath = indexPathForCell(cell: selected, onPage: fromPage) else {
+                break labelpoint
+            }
+            indexPathsToUpdateOnCurrentPage.append(selectedIndexPath)
+        }
+        switch currentTransitionMode {
+        case .swipeToChildren:
+            nextFocusMode = .asChildrenOfParent
+            if let swipedCell = getCell(forIndexPath: indexPathOfLastSwipe!, onPage: fromPage) {
+                selectedParentCell = swipedCell
+                selectedChildCell = nil
+            } else {
+                print("error getting Swiped cell.")
+            }
+        case .addCell:
+            print("not changing focus mode")
+            nextFocusMode = .asChildrenOfParent
+        case .swipeToParents:
+            nextFocusMode = .asParentOfChild
+            if let swipedCell = getCell(forIndexPath: indexPathOfLastSwipe!, onPage: fromPage) {
+                selectedChildCell = swipedCell
+                selectedParentCell = nil
+            } else {
+                print("error getting Swiped cell.")
+            }
+        default:
+            print("ERROR, transition mode shouldn't be none after successful transition.")
+        }
+//        defer {
+//            selectedCell = nil
+//        }
+//        if selectedCell != nil {
+//            selectedCell!.state = .focused
+//            if toPage > fromPage {
+//                selectedParentCell = selectedCell
+//                guard selectedCell != nil else {
+//                    return
+//                }
+//            } else {
+//                selectedChildCell = selectedCell
+//            }
+//            var indexSet = IndexSet()
+//            indexSet.insert(indexPathForCell(cell: selectedCell!, onPage: fromPage)!.section)
+////            currentTableView.reloadSections(indexSet, with: .automatic)
+//        }
     }
     
     func reuseIdentifiersToRegister(forTableViewOnPage page: Int) -> [String : String] {
@@ -344,36 +536,27 @@ extension TreeViewController: PagedTableViewControllerDelegate {
                 CellState.selected.reuseIdentifier: "SelectedCardCell",
                 CellState.editing.reuseIdentifier: "EditingCardCell"]
     }
-    
-//    func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, shouldTransitionWith interactionType: PagedTableViewInteractionType, at indexPath: IndexPath?) -> Bool {
-//        return true
-//    }
 
     
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, scrollPositionForTransitionToPage nextPage: Int, fromPage: Int, withSwipeAt indexPath: IndexPath?) -> IndexPath? {
         print("getting scroll position")
         // TODO - improve this implementation
-        guard let indexPath = indexPath else {
-            return nil
-        }
-        print("...for indexPath \(indexPath)")
-        guard let swipedCell = getCell(forIndexPath: indexPath, onPage: fromPage) else {
-            return nil
-        }
-        selectedCell = nil
-        selectedChildCell = nil
-        selectedParentCell = nil
-        if nextPage > fromPage {
-            selectedParentCell = getCell(forIndexPath: indexPath, onPage: fromPage)
+        switch currentTransitionMode {
+        case .swipeToChildren:
+            let swipedCell = getCell(forIndexPath: indexPath!, onPage: fromPage)!
             var section = indexPathForNewChildOfCell(swipedCell, onPage: fromPage).section
             let maxSection = ptvcDataSource.pagedTableViewController(self, numberOfSectionsOnPage: nextPage)
             if section > maxSection-1 {
                 section = maxSection - 1
             }
+            // should scroll with multiple sections visible.
+            if swipedCell.children.count == 0 && section > 0 {
+                return IndexPath(row: treeData[nextPage][section-1].count - 1, section: section-1)
+            }
             print("Should scroll to section \(section)")
             return IndexPath(row: 0, section: section)
-        } else {
-            selectedChildCell = getCell(forIndexPath: indexPath, onPage: fromPage)
+        case .swipeToParents:
+            let swipedCell = getCell(forIndexPath: indexPath!, onPage: fromPage)!
             for (secNum, sec) in treeData[nextPage].enumerated() {
                 for (rowNum, cell) in sec.enumerated() {
                     if cell == swipedCell.parent {
@@ -383,8 +566,30 @@ extension TreeViewController: PagedTableViewControllerDelegate {
                     }
                 }
             }
+        case .addCell:
+            let section = indexPathForNewChildOfCell(selectedCell!, onPage: fromPage).section
+            print("should scroll to section \(section)")
+            return IndexPath(row: 0, section: section)
+    
+        default:
+            print("Error! couldn't get a scroll position because currentTransitionMode is none")
+            return nil
         }
         return nil
+    }
+    
+    func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, titleForHeaderIn section: Int, onPage page: Int) -> String? {
+        guard let repCell = treeData[page][section].first else {
+            return nil
+        }
+        guard let parent = repCell.parent else {
+            return "# Root Cells"
+        }
+        let lines = parent.text.components(separatedBy: "\n")
+        guard let line = lines.first else {
+            return nil
+        }
+        return line
     }
 }
 
@@ -448,7 +653,6 @@ extension TreeViewController: CardCellDelegate {
             return
         }
         editCell.markdownTextView.becomeFirstResponder()
-        print("delegate acknowledges add below")
     }
     
     func addRightButtonPressed(inCardCell cardCell: SelectedCardCell) {
@@ -465,6 +669,11 @@ extension TreeViewController: CardCellDelegate {
             print("ERROR couldn't retrieve edit cell while adding right!")
             return
         }
+//        selectedParentCell = selectedCell
+//        selectedCell = nil
+//        selectedChildCell = nil
+        currentTransitionMode = .addCell
+        print("scrolling right")
         scrollRight(completion: nil)
         print("delegate acknowledges add right")
     }
@@ -479,21 +688,23 @@ extension TreeViewController: CardCellDelegate {
         cell.text = textView.text
         cell.state = .selected
         selectedCell = cell
-        selectedParentCell = nil
-        selectedChildCell = nil
+//        selectedParentCell = nil
+//        selectedChildCell = nil
         currentTableView.beginUpdates()
         currentTableView.reloadRows(at: [indexPath], with: .automatic)
         currentTableView.endUpdates()
+        currentTableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        
+        let newCell = cellForRowAt(indexPath: indexPath, onPage: currentPage)
+        newCell?.layoutIfNeeded()
     }
     
     func doneEditingButtonPressed(inCardCell cardCell: EditingCardCell) {
         cardCell.markdownTextView.resignFirstResponder()
-        print("delegate acknowledges done editing button pressed")
     }
     
     func formattingHelpButtonPressed(inCardCell cardCell: CardCell) {
         performSegue(withIdentifier: "showFormattingHelp", sender: self)
-        print("delegate acknowledges formatting help pressed")
     }
     
     func deleteButtonPressed(inCardCell cardCell: SelectedCardCell) {
@@ -507,7 +718,7 @@ extension TreeViewController: CardCellDelegate {
         }
         var pageNum = currentPage + 1
         while pageNum < tableViews.count-1 {
-            
+            // todo - move reloadData calls to background thread
             let table = tableViews[pageNum]
             table.reloadData()
             pageNum += 1

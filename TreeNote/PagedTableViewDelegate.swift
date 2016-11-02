@@ -14,8 +14,9 @@ import UIKit
     // MARK : Page transitions
     @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, shouldTransitionWith interactionType: PagedTableViewInteractionType, at indexPath: IndexPath?) -> Bool
     @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, scrollPositionForTransitionToPage nextPage: Int, fromPage: Int, withSwipeAt indexPath: IndexPath?) -> IndexPath?
-    @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didFinishAnimatingTransition finished: Bool, toPage: Int)
+    @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didFinishAnimatingTransition finished: Bool, toPage: Int, fromPage: Int, transitionCompleted completed: Bool)
     @objc optional func scrollPosition(forTransitionWith interactionType: PagedTableViewInteractionType, fromIndexPath indexPath: IndexPath?, onPage page: Int) -> IndexPath?
+    @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, willTransition toPage: Int, fromPage: Int)
     
     // MARK : TableViewDelegate methods
     @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, willSelectRowAt indexPath: IndexPath, onPage page: Int) -> IndexPath?
@@ -27,8 +28,10 @@ import UIKit
     @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didHighlightRowAt indexPath: IndexPath, onPage page: Int)
     @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didUnhighlightRowAt indexPath: IndexPath, onPage page: Int)
     @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, heightForRowAt indexPath: IndexPath, onPage page: Int) -> CGFloat
+    @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, titleForHeaderIn section: Int, onPage page: Int) -> String?
     // MARK : Allow Registration of tableViewCell reuse identifiers without exposing tableView
     @objc optional func reuseIdentifiersToRegister(forTableViewOnPage page: Int) -> [String: String]
+    @objc optional func pagedTableViewController(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath )
     
     // MARK : Methods which allow further customization.
     @objc optional func tableViewDataSource(forPage page: Int) -> UITableViewDataSource?
