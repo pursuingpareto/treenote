@@ -9,26 +9,21 @@
 import UIKit
 import Down
 
+// Note - consider refactoring this class so API doesn't have so much exposed.
 class PagedTableViewController: UIPageViewController {
     
     public var ptvcDataSource: PagedTableViewControllerDataSource!
     public var ptvcDelegate: PagedTableViewControllerDelegate?
-    
-    // TODO - I'm a little reluctant to expose the entire table view. Don't really feel like implementing all methods though
-    public var currentTableView: UITableView! {
-        return self.currentViewController.tableView!
-    }
-    
+    public var currentTableView: UITableView! { return currentViewController.tableView! }
     public var indexPathsOfSelectedCells = Set<IndexPath>()
-    
     public func dequeueReusableCellWithIdentifier(_ identifier: String, forCellAtIndexPath indexPath: IndexPath, onPage page: Int) -> UITableViewCell? {
-        let viewController = self.orderedViewControllers[page]
+        let viewController = orderedViewControllers[page]
         let tableView = viewController.tableView!
         return tableView.dequeueReusableCell(withIdentifier: identifier)
     }
     
     public func cellForRowAt(indexPath : IndexPath, onPage page: Int) -> UITableViewCell? {
-        let tableView = self.orderedViewControllers[page].tableView!
+        let tableView = orderedViewControllers[page].tableView!
         return tableView.cellForRow(at: indexPath)
     }
     
@@ -79,11 +74,11 @@ class PagedTableViewController: UIPageViewController {
     }
     
     fileprivate func pageNumber(of tableView: UITableView) -> Int {
-        return self.tableViews.index(of: tableView)!
+        return tableViews.index(of: tableView)!
     }
     
     private func setupViewControllers() {
-        let numPages = self.ptvcDataSource.numberOfPages(in: self)
+        let numPages = ptvcDataSource.numberOfPages(in: self)
         for pageNum in 0...numPages-1 {
             addPage(forPage: pageNum)
         }
@@ -128,7 +123,7 @@ class PagedTableViewController: UIPageViewController {
 
 extension PagedTableViewController: UIPageViewControllerDataSource{
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        let numPages = self.ptvcDataSource.numberOfPages(in: self)
+        let numPages = ptvcDataSource.numberOfPages(in: self)
         guard let viewController = viewController as? UITableViewController else { return nil }
         guard let index = orderedViewControllers.index(of: viewController) else { return nil }
         if index >= numPages-1 { return nil }
@@ -169,38 +164,37 @@ extension PagedTableViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         currentPage = orderedViewControllers.index(of: currentViewController)!
         let fromPage: Int = completed ? previousPage! : currentPage
-        self.ptvcDelegate?.pagedTableViewController?(self, didFinishAnimatingTransition: finished, toPage: currentPage, fromPage: fromPage, transitionCompleted: completed)
+        ptvcDelegate?.pagedTableViewController?(self, didFinishAnimatingTransition: finished, toPage: currentPage, fromPage: fromPage, transitionCompleted: completed)
     }
 }
 
 extension PagedTableViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         let pageNumber = self.pageNumber(of: tableView)
-        return self.ptvcDataSource.pagedTableViewController(self, numberOfSectionsOnPage: pageNumber)
+        return ptvcDataSource.pagedTableViewController(self, numberOfSectionsOnPage: pageNumber)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let pageNumber = self.pageNumber(of: tableView)
-        let cell = self.ptvcDataSource.pagedTableViewController(self, cellForRowAt: indexPath, onPage: pageNumber)
+        let cell = ptvcDataSource.pagedTableViewController(self, cellForRowAt: indexPath, onPage: pageNumber)
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let pageNumber = self.pageNumber(of: tableView)
-        return self.ptvcDataSource.pagedTableViewController(self, numberOfRowsInSection: section, onPage: pageNumber)
+        return ptvcDataSource.pagedTableViewController(self, numberOfRowsInSection: section, onPage: pageNumber)
     }
 }
 
 extension PagedTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let pageNumber = self.pageNumber(of: tableView)
-        self.ptvcDelegate?.pagedTableViewController?(self, willDisplay: cell, forRowAt: indexPath, onPage: pageNumber)
+        ptvcDelegate?.pagedTableViewController?(self, willDisplay: cell, forRowAt: indexPath, onPage: pageNumber)
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         let pageNumber = self.pageNumber(of: tableView)
-        // TODO - handle case where delegate returns nil!
-        if let returnedIndexPath = self.ptvcDelegate?.pagedTableViewController?(self, willSelectRowAt: indexPath, onPage: pageNumber) {
+        if let returnedIndexPath = ptvcDelegate?.pagedTableViewController?(self, willSelectRowAt: indexPath, onPage: pageNumber) {
             return returnedIndexPath
         } else {
             return indexPath
@@ -210,13 +204,12 @@ extension PagedTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let pageNumber = self.pageNumber(of: tableView)
         indexPathsOfSelectedCells.insert(indexPath)
-        self.ptvcDelegate?.pagedTableViewController?(self, didSelectRowAt: indexPath, onPage: pageNumber)
+        ptvcDelegate?.pagedTableViewController?(self, didSelectRowAt: indexPath, onPage: pageNumber)
     }
     
     func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath? {
         let pageNumber = self.pageNumber(of: tableView)
-        // TODO - handle case where delegate returns nil!
-        if let returnedIndexPath = self.ptvcDelegate?.pagedTableViewController?(self, willDeselectRowAt: indexPath, onPage: pageNumber) {
+        if let returnedIndexPath = ptvcDelegate?.pagedTableViewController?(self, willDeselectRowAt: indexPath, onPage: pageNumber) {
             return returnedIndexPath
         } else {
             return indexPath
@@ -226,44 +219,31 @@ extension PagedTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         let pageNumber = self.pageNumber(of: tableView)
         indexPathsOfSelectedCells.remove(indexPath)
-        self.ptvcDelegate?.pagedTableViewController?(self, didDeselectRowAt: indexPath, onPage: pageNumber)
+        ptvcDelegate?.pagedTableViewController?(self, didDeselectRowAt: indexPath, onPage: pageNumber)
     }
     
     func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
         let pageNumber = self.pageNumber(of: tableView)
-        self.ptvcDelegate?.pagedTableViewController?(self, didHighlightRowAt: indexPath, onPage: pageNumber)
+        ptvcDelegate?.pagedTableViewController?(self, didHighlightRowAt: indexPath, onPage: pageNumber)
     }
     
     func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
         let pageNumber = self.pageNumber(of: tableView)
-        self.ptvcDelegate?.pagedTableViewController?(self, didUnhighlightRowAt: indexPath, onPage: pageNumber)
+        ptvcDelegate?.pagedTableViewController?(self, didUnhighlightRowAt: indexPath, onPage: pageNumber)
     }
     
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
         let pageNumber = self.pageNumber(of: tableView)
-        guard let should = self.ptvcDelegate?.pagedTableViewController?(self, shouldHighlightRowAt: indexPath, onPage: pageNumber) else {
+        guard let should = ptvcDelegate?.pagedTableViewController?(self, shouldHighlightRowAt: indexPath, onPage: pageNumber) else {
             return false
         }
         return should
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        // TODO - make sure we handle unimmplemented case
-        if let height = self.ptvcDelegate?.pagedTableViewController?(self, heightForRowAt: indexPath, onPage: currentPage) {
+        if let height = ptvcDelegate?.pagedTableViewController?(self, heightForRowAt: indexPath, onPage: currentPage) {
             return height
         } else {
             return UITableViewAutomaticDimension
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool {
-        return false
-    }
-    
-    func tableView(_ tableView: UITableView, indentationLevelForRowAt indexPath: IndexPath) -> Int {
-        if indexPathsOfSelectedCells.contains(indexPath) {
-            return 60
-        } else {
-            return 0
         }
     }
     

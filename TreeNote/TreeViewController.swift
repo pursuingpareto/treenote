@@ -31,7 +31,7 @@ class TreeViewController: PagedTableViewController {
     var selectedParentCell: Cell? = nil
     var selectedChildCell: Cell? = nil
     
-    // TODO - reimplement this to reduce the amount of repeated tree traversal.
+    // Note - this is pretty ineffecient. Consider reimplementing if performance suffers.
     var treeData : [[[Cell]]] {
         var depth = 0
         var data = [[[Cell]]]()
@@ -155,7 +155,7 @@ class TreeViewController: PagedTableViewController {
         }
     }
     
-    // TODO - fix this implementation if it becomes problematic. It scales poorly with tree size.
+    // Note - fix this implementation if it becomes problematic. It scales poorly with tree size.
     fileprivate func deleteDescendents(ofParent parent: Cell, onPage page: Int) {
         let nextPage = page+1
         if nextPage >= tableViews.count { return }
@@ -296,24 +296,14 @@ extension TreeViewController: PagedTableViewControllerDelegate {
         return true
     }
     
-    // TODO - implement this better. Probably require a height property for card cells
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, heightForRowAt indexPath: IndexPath, onPage page: Int) -> CGFloat {
         return UITableViewAutomaticDimension
     }
     
-    // TODO - use focusMode to handle focusing
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didFinishAnimatingTransition finished: Bool, toPage: Int, fromPage: Int, transitionCompleted completed: Bool) {
-        print("didFinishAnimatingTransition \(currentTransitionMode)")
-        defer {
-            if currentTransitionMode != .addCell {
-                selectedCell = nil
-            }
-            currentTransitionMode = .none
-            indexPathOfLastSwipe = nil
-        }
-        guard completed else {
-            return
-        }
+        if currentTransitionMode != .addCell && completed { selectedCell = nil }
+        currentTransitionMode = .none
+        if completed { indexPathOfLastSwipe = nil }
     }
     
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, willTransition toPage: Int, fromPage: Int) {
@@ -514,7 +504,7 @@ extension TreeViewController: CardCellDelegate {
         while pageNum < tableViews.count-1 {
             // todo - move reloadData calls to background thread
             let table = tableViews[pageNum]
-            table.reloadData()
+            DispatchQueue.main.async { table.reloadData() }
             pageNum += 1
         }
         deleteDescendents(ofParent: cell, onPage: currentPage)
