@@ -16,12 +16,9 @@ enum CellState {
     
     var reuseIdentifier: String {
         switch self {
-        case .selected:
-            return "selectedCardCell"
-        case .editing:
-            return "editingCardCell"
-        default:
-            return "defaultCardCell"
+        case .selected: return "selectedCardCell"
+        case .editing:  return "editingCardCell"
+        default:        return "defaultCardCell"
         }
     }
 }
@@ -57,10 +54,7 @@ class Cell: NSObject, NSCoding {
         let text = aDecoder.decodeObject(forKey: PropertyKey.cellTextKey) as? String
         let parent = aDecoder.decodeObject(forKey: PropertyKey.cellParentKey) as? Cell
         let children = aDecoder.decodeObject(forKey: PropertyKey.cellChildrenKey) as? [Cell]
-        guard text != nil && children != nil else {
-            print("error decoding cell")
-            return nil
-        }
+        guard text != nil && children != nil else { return nil }
         self.init()
         self.parent = parent
         self.text = text!

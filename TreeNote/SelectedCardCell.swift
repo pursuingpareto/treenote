@@ -44,14 +44,11 @@ class SelectedCardCell: CardCell {
         topBar.clipsToBounds = true
         if cell.children.count == 0 {
             addRightButton.isEnabled = true
-//            addRightButton.isHidden = false
         } else {
             addRightButton.isEnabled = false
-//            addRightButton.isHidden = true
         }
         let down =  Down(markdownString: cell.text)
         try? mainLabel.attributedText = down.toAttributedString()
-        
         backgroundColor = UIColor.white
     }
 }

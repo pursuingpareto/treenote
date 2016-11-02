@@ -39,10 +39,7 @@ class TreeBrowseController: UIViewController {
             let firstCell = Cell()
             firstCell.text = "Example Text"
             let newTree = Tree(rootCells: [firstCell], title: "Untitled Tree")!
-            guard let text = self.newTitleField?.text else {
-                print("no text found for title")
-                return
-            }
+            guard let text = self.newTitleField?.text else { return }
             newTree.title = text
             for tree in self.trees {
                 if tree.title == text {
@@ -72,28 +69,15 @@ class TreeBrowseController: UIViewController {
         }
     }
     
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView.reloadData()
     }
     
-//    fileprivate func treeForTitle(_ title: String) -> Tree? {
-//        let tree = Tree(rootCells: [], title: title)
-//        tree?.populateWithFakeData()
-//        return tree
-//    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
-        guard let browseCell = sender as? TreeBrowseCell else {
-            print("Received segue from invalid sender \(sender)")
-            return
-        }
-        guard let treeTitle = browseCell.textLabel?.text else {
-            print("tree browse cell had no textlabel text")
-            return
-        }
+        guard let browseCell = sender as? TreeBrowseCell else { return }
+        guard let treeTitle = browseCell.textLabel?.text else { return }
         var tree: Tree? = nil
         for t in trees {
             if t.title == treeTitle {
@@ -101,10 +85,7 @@ class TreeBrowseController: UIViewController {
                 break
             }
         }
-        guard let nextVC = segue.destination as? TreeViewController else {
-            print("attempting to segue to invalid view controller \(segue.destination)")
-            return
-        }
+        guard let nextVC = segue.destination as? TreeViewController else { return }
         if tree != nil {
             nextVC.tree = tree
             nextVC.navigationItem.title = treeTitle

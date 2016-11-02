@@ -12,10 +12,8 @@ import UIKit
 // TODO - provide default implementations of many of these methods instead of having such a hefty protocol.
 @objc protocol PagedTableViewControllerDelegate {
     // MARK : Page transitions
-    @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, shouldTransitionWith interactionType: PagedTableViewInteractionType, at indexPath: IndexPath?) -> Bool
     @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, scrollPositionForTransitionToPage nextPage: Int, fromPage: Int, withSwipeAt indexPath: IndexPath?) -> IndexPath?
     @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, didFinishAnimatingTransition finished: Bool, toPage: Int, fromPage: Int, transitionCompleted completed: Bool)
-    @objc optional func scrollPosition(forTransitionWith interactionType: PagedTableViewInteractionType, fromIndexPath indexPath: IndexPath?, onPage page: Int) -> IndexPath?
     @objc optional func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, willTransition toPage: Int, fromPage: Int)
     
     // MARK : TableViewDelegate methods

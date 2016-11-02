@@ -25,37 +25,26 @@ class PagedTableViewController: UIPageViewController {
         let viewController = self.orderedViewControllers[page]
         let tableView = viewController.tableView!
         return tableView.dequeueReusableCell(withIdentifier: identifier)
-//        return tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
     }
     
     public func cellForRowAt(indexPath : IndexPath, onPage page: Int) -> UITableViewCell? {
         let tableView = self.orderedViewControllers[page].tableView!
-//        tableView.reloadRows(at: [indexPath], with: .none)
         return tableView.cellForRow(at: indexPath)
-
     }
     
     public func scrollRight(completion: (() -> Void)?) {
-        guard currentPage != orderedViewControllers.count-1 else {
-            return
-        }
+        guard currentPage != orderedViewControllers.count-1 else { return }
         let lastVC = currentViewController
         let nextVC = orderedViewControllers[currentPage+1]
         delegate?.pageViewController!(self, willTransitionTo: [nextVC])
         setViewControllers([nextVC], direction: .forward, animated: true, completion: {
             finished in
-//            if finished {
-//                completion?()
-//            }
-            
             self.delegate?.pageViewController!(self, didFinishAnimating: true, previousViewControllers: [lastVC!], transitionCompleted: finished)
         })
     }
+    
     public func scrollLeft() {
-        guard currentPage != 0 else {
-            print("currentPage \(currentPage) previousPage \(previousPage)")
-            return
-        }
+        guard currentPage != 0 else { return }
         let lastVC = currentViewController
         let nextVC = orderedViewControllers[currentPage-1]
         delegate?.pageViewController!(self, willTransitionTo: [nextVC])
@@ -72,9 +61,7 @@ class PagedTableViewController: UIPageViewController {
     fileprivate var orderedViewControllers = [UITableViewController]()
     public var indexPathOfLastSwipe: IndexPath?
     public fileprivate(set) var currentPage: Int = 0 {
-        didSet {
-            previousPage = oldValue
-        }
+        didSet { previousPage = oldValue }
     }
     fileprivate var previousPage: Int?
     
@@ -82,16 +69,11 @@ class PagedTableViewController: UIPageViewController {
         super.init(coder: aDecoder)
     }
     
-    override func loadView(){
-        super.loadView()
-    }
-    
     override func viewDidLoad() {
         setupViewControllers()
         setViewControllers([orderedViewControllers.first!], direction: .forward, animated: true, completion: nil)
         dataSource = self
         delegate = self
-        
         super.viewDidLoad()
         addInterceptingPanRecognizer()
     }
@@ -118,10 +100,6 @@ class PagedTableViewController: UIPageViewController {
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 250.0
         if let reuseIdentifiers = ptvcDelegate?.reuseIdentifiersToRegister?(forTableViewOnPage: page) {
-            //                for (identifier, cellClass) in reuseIdentifiers {
-            //                    tableView.register(cellClass, forCellReuseIdentifier: identifier)
-            //                }
-            // TODO - fix the data structure that this method returns. Don't need cell class.
             for (identifier, nibName) in reuseIdentifiers {
                 let nib = UINib(nibName: nibName, bundle: nil)
                 tableView.register(nib, forCellReuseIdentifier: identifier)
@@ -151,24 +129,9 @@ class PagedTableViewController: UIPageViewController {
 extension PagedTableViewController: UIPageViewControllerDataSource{
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         let numPages = self.ptvcDataSource.numberOfPages(in: self)
-        print("numPages is \(numPages)")
-        guard let viewController = viewController as? UITableViewController else {
-            return nil
-        }
-        guard let index = orderedViewControllers.index(of: viewController) else {
-            return nil
-        }
-        if index >= numPages-1 {
-            return nil
-        }
-//        if index >= numPages - 1 {
-//            addViewController(forPage: index)
-//            return orderedViewControllers[index+1]
-////            return nil
-//        } else {
-//            return orderedViewControllers[index+1]
-//        }
-        print("attempting to get ordered view controller at index \(index + 1)")
+        guard let viewController = viewController as? UITableViewController else { return nil }
+        guard let index = orderedViewControllers.index(of: viewController) else { return nil }
+        if index >= numPages-1 { return nil }
         return orderedViewControllers[index+1]
     }
     
@@ -189,7 +152,6 @@ extension PagedTableViewController: UIPageViewControllerDataSource{
 
 extension PagedTableViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
-        print("will transition")
         guard let nextViewController = pendingViewControllers.first as? UITableViewController else {
             return
         }
@@ -202,12 +164,6 @@ extension PagedTableViewController: UIPageViewControllerDelegate {
         if let scrollPosition = ptvcDelegate?.pagedTableViewController?(self, scrollPositionForTransitionToPage: nextPage, fromPage: previousPage!, withSwipeAt: indexPathOfLastSwipe) {
             nextViewController.tableView.scrollToRow(at: scrollPosition, at: .top, animated: true)
         }
-//        nextViewController.tableView.reloadData()
-//        currentPage = nextPage
-//        if let scrollPosition = self.ptvcDelegate?.pagedTableViewController?(self, scrollPositionForTransitionToPage: nextPage, fromPage: previousPage!, withSwipeAt: self.indexPathOfLastSwipe) {
-//            nextViewController.tableView.scrollToRow(at: scrollPosition, at: .top, animated: true)
-//        }
-        
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
@@ -251,19 +207,6 @@ extension PagedTableViewController: UITableViewDelegate {
         }
     }
     
-//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//        guard let title = ptvcDelegate?.pagedTableViewController?(self, titleForHeaderIn: section, onPage: pageNumber(of: tableView)) else {
-//            return nil
-//        }
-//        let down = Down(markdownString: title)
-//        
-//        let width = tableView.bounds.width
-//        let view = UITableViewHeaderFooterView(frame: CGRect(x: 0, y: 0, width: width, height: 100))
-//        view.contentView
-//        try? view.textLabel?.text = down.toAttributedString().string
-//        return view
-//    }
-//    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let pageNumber = self.pageNumber(of: tableView)
         indexPathsOfSelectedCells.insert(indexPath)
@@ -297,7 +240,6 @@ extension PagedTableViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-//        return false
         let pageNumber = self.pageNumber(of: tableView)
         guard let should = self.ptvcDelegate?.pagedTableViewController?(self, shouldHighlightRowAt: indexPath, onPage: pageNumber) else {
             return false
@@ -314,12 +256,6 @@ extension PagedTableViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool {
-//        return indexPathsOfSelectedCells.contains(indexPath)
-        return false
-    }
-    
-    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: IndexPath) -> Bool {
-//        return indexPathsOfSelectedCells.contains(indexPath)
         return false
     }
     
@@ -331,45 +267,20 @@ extension PagedTableViewController: UITableViewDelegate {
         }
     }
     
-//    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-//        print("assigning Edit actions")
-//        let action1 = UITableViewRowAction(style: .destructive, title: "Delete", handler: {_,_ in print("delete")})
-//        let action2 = UITableViewRowAction(style: .default, title: "Default", handler: {_,_ in print("default")})
-//        let action3 = UITableViewRowAction(style: .normal, title: "Normal", handler: {_,_ in print("normal")})
-//        return [action1, action2, action3]
-//    }
-//    
-    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
-        if indexPathsOfSelectedCells.contains(indexPath) {
-            return .delete
-        } else {
-            return .none
-        }
-    }
-    
     func tableView(_ tableView: UITableView, canFocusRowAt indexPath: IndexPath) -> Bool {
         return false
     }
-    
-//    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-//        return true
-//    }
 }
 
 extension PagedTableViewController: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        guard gestureRecognizer.isKind(of: UIPanGestureRecognizer.self) else {
-            return true
-        }
-        guard let tableViewController = self.viewControllers?.first as? UITableViewController else {
-            return true
-        }
+        guard gestureRecognizer.isKind(of: UIPanGestureRecognizer.self) else { return true }
+        guard let tableViewController = self.viewControllers?.first as? UITableViewController else { return true }
         if let indexPath = tableViewController.tableView.indexPathForRow(at: touch.location(in: tableViewController.tableView)) {
             // this touch should be handled by the page view controller.
             self.indexPathOfLastSwipe = indexPath
             return false
         }
-        print("touch intercepted!")
         return true
     }
 }

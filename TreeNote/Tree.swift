@@ -16,21 +16,12 @@ struct PropertyKey {
     static let cellParentKey = "cellParent"
 }
 
-protocol TreeUIDelegate {
-    func didDeleteCells(sections: IndexSet, onPage page: Int)
-}
-
 class Tree: NSObject, NSCoding {
-    var delegate: TreeUIDelegate? = nil
     var title = "Untitled Tree"
     fileprivate(set) var rootCells = [Cell]()
-    // TODO - implement this to actually return maxDepth...
-    private(set) var maxDepth = 2
-    
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     static let ArchiveURL = DocumentsDirectory.appendingPathComponent("trees")
-    
-    
+
     init?(rootCells: [Cell], title: String) {
         self.title = title
         self.rootCells = rootCells
@@ -41,22 +32,12 @@ class Tree: NSObject, NSCoding {
         if let parent = parent {
             parent.add(cell: cell, atIndex: index)
         } else {
-            print("adding cell with text \(cell) to rootCells")
             self.rootCells.insert(cell, at: index)
         }
     }
     
-    //    func deleteCell(atDepth depth: Int, inSection section: Int, atPosition position: Int) {
-    //        var cellsAtDepth = self.getSectionedCells(atDepth: depth)
-    //        print("removing cell at depth \(depth) in section \(section) at position \(position)")
-    //        let removed = cellsAtDepth[section].remove(at: position)
-    //        print("removed cell with text \(removed.text)")
-    //    }
-    
     func delete(cell: Cell) {
-        print("deleting cell with text \(cell.text)")
         var pathToCell = getPathToCell(cell: cell)
-        print("path to cell is \(pathToCell)")
         var children = self.rootCells
         var child: Cell? = nil
         var nextIndex: Int
@@ -65,16 +46,13 @@ class Tree: NSObject, NSCoding {
             child = children[nextIndex]
             children = child!.children
         }
-        
         let indexOfCellToRemove = pathToCell.popLast()!
-        let deleted = children.remove(at: indexOfCellToRemove)
+        children.remove(at: indexOfCellToRemove)
         if child != nil {
             child!.children = children
         } else {
             self.rootCells = children
         }
-        
-        print("Deleted cell with text \(deleted.text)")
     }
     
     func getPathToCell(cell: Cell) -> [Int] {
@@ -126,23 +104,6 @@ class Tree: NSObject, NSCoding {
         return cellsAtDepth
     }
     
-    func populateWithFakeData() {
-        let cellTexts = ["**bold** example 1", "*italics* here's another cell", "### h3 more cells!", "## A list\n* one\n* two"]
-        var cell: Cell
-        for cellText in cellTexts {
-            cell = Cell()
-            cell.text = cellText
-            self.rootCells.append(cell)
-        }
-        for cell in self.rootCells {
-            for cellText in cellTexts {
-                let newCell = Cell()
-                newCell.text = "\(cell.text) -- \(cellText)"
-                cell.append(cell: newCell)
-            }
-        }
-    }
-    
     // MARK: NSCoding
     func encode(with aCoder: NSCoder) {
         aCoder.encode(rootCells, forKey: PropertyKey.rootCellKey)
@@ -150,16 +111,9 @@ class Tree: NSObject, NSCoding {
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
-        guard let rootCells = aDecoder.decodeObject(forKey: PropertyKey.rootCellKey) as? [Cell] else {
-            print("error decoding rootCells")
-            return nil
-        }
-        guard let title = aDecoder.decodeObject(forKey: PropertyKey.titleKey) as? String else {
-            print("error decoding title")
-            return nil
-        }
+        guard let rootCells = aDecoder.decodeObject(forKey: PropertyKey.rootCellKey) as? [Cell] else { return nil }
+        guard let title = aDecoder.decodeObject(forKey: PropertyKey.titleKey) as? String else { return nil }
         self.init(rootCells: rootCells, title: title)
-        
     }
 }
 
