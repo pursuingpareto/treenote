@@ -6,13 +6,12 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="defaultCardCell" rowHeight="247" id="47W-Ye-q3E" customClass="DefaultCardCell" customModule="TreeNote" customModuleProvider="target">
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="defaultCardCell" rowHeight="247" id="47W-Ye-q3E" customClass="DefaultCardCell" customModule="TreeNote" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="375" height="247"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="47W-Ye-q3E" id="Xhr-p5-n9b">
@@ -26,13 +25,12 @@
                             <constraint firstAttribute="width" constant="6" id="2fJ-Ya-Zie"/>
                         </constraints>
                     </view>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="right" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X6z-Cl-AM6">
-                        <rect key="frame" x="14" y="113" width="313" height="20.5"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Po1-g0-w9i">
+                        <rect key="frame" x="14" y="113" width="317" height="20.5"/>
                         <attributedString key="attributedText">
                             <fragment content="Label">
                                 <attributes>
                                     <font key="NSFont" metaFont="system" size="17"/>
-                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                 </attributes>
                             </fragment>
                         </attributedString>
@@ -41,19 +39,18 @@
                 </subviews>
                 <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 <constraints>
-                    <constraint firstItem="X6z-Cl-AM6" firstAttribute="centerY" secondItem="Xhr-p5-n9b" secondAttribute="centerY" id="AUk-Sw-YTM"/>
-                    <constraint firstAttribute="bottomMargin" relation="greaterThanOrEqual" secondItem="X6z-Cl-AM6" secondAttribute="bottom" constant="44" id="Nv2-pS-q9B"/>
-                    <constraint firstItem="3xd-Qe-7nO" firstAttribute="top" secondItem="Xhr-p5-n9b" secondAttribute="topMargin" constant="-8" id="azW-Ek-XyM"/>
-                    <constraint firstItem="X6z-Cl-AM6" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Xhr-p5-n9b" secondAttribute="topMargin" constant="44" id="b8a-gk-Nzs"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="X6z-Cl-AM6" secondAttribute="trailing" constant="40" id="fwG-u2-B18"/>
-                    <constraint firstItem="X6z-Cl-AM6" firstAttribute="leading" secondItem="3xd-Qe-7nO" secondAttribute="trailing" constant="8" id="htL-Fh-Tb1"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="3xd-Qe-7nO" secondAttribute="bottom" constant="-8" id="hzk-Uy-N2q"/>
-                    <constraint firstItem="3xd-Qe-7nO" firstAttribute="leading" secondItem="Xhr-p5-n9b" secondAttribute="leadingMargin" constant="-8" id="yFM-jF-rsS"/>
+                    <constraint firstItem="Po1-g0-w9i" firstAttribute="centerY" secondItem="Xhr-p5-n9b" secondAttribute="centerY" id="EDQ-Vb-zel"/>
+                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="Po1-g0-w9i" secondAttribute="bottom" constant="44" id="IUM-Uw-vYg"/>
+                    <constraint firstAttribute="trailing" secondItem="Po1-g0-w9i" secondAttribute="trailing" constant="44" id="MEK-mk-FJ2"/>
+                    <constraint firstItem="3xd-Qe-7nO" firstAttribute="leading" secondItem="Xhr-p5-n9b" secondAttribute="leading" id="Meg-gV-XrQ"/>
+                    <constraint firstItem="Po1-g0-w9i" firstAttribute="leading" secondItem="3xd-Qe-7nO" secondAttribute="trailing" constant="8" id="aCc-qJ-rkF"/>
+                    <constraint firstItem="Po1-g0-w9i" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Xhr-p5-n9b" secondAttribute="top" constant="44" id="iQF-hk-XdJ"/>
+                    <constraint firstItem="3xd-Qe-7nO" firstAttribute="top" secondItem="Xhr-p5-n9b" secondAttribute="top" id="udU-5B-4Ux"/>
+                    <constraint firstAttribute="bottom" secondItem="3xd-Qe-7nO" secondAttribute="bottom" id="ukm-iw-w9O"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
-                <outlet property="mainLabel" destination="X6z-Cl-AM6" id="gkV-G8-YJ4"/>
-                <outlet property="textLabel" destination="X6z-Cl-AM6" id="Veh-P6-mwD"/>
+                <outlet property="mainLabel" destination="Po1-g0-w9i" id="I5F-AX-66n"/>
             </connections>
             <point key="canvasLocation" x="-92.5" y="-6.5"/>
         </tableViewCell>

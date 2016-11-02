@@ -20,7 +20,10 @@ class DefaultCardCell: CardCell {
         case .focused:
             backgroundColor = UIColor.white
         default:
-            backgroundColor = UIColor(white: 0.9, alpha: 1.0)
+            backgroundColor = UIColor.white
         }
+    }
+    override func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return false
     }
 }
