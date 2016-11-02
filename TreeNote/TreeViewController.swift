@@ -133,8 +133,7 @@ class TreeViewController: PagedTableViewController {
                 print("inserted row at indexPath \(toIndexPath) on page \(tableViews.index(of: tableView))")
             }
             tableView.reloadData()
-            // TODO - use the other cellForRow method
-            guard let editCell = tableView.cellForRow(at: toIndexPath) as? EditingCardCell else {
+            guard let editCell = cellForRowAt(indexPath: toIndexPath, onPage: toPage) as? EditingCardCell else {
                 print("ERROR! couldn't get editing cell at indexPath \(toIndexPath) on page \(toPage)")
                 return nil
             }
@@ -147,7 +146,7 @@ class TreeViewController: PagedTableViewController {
             indexSet.insert(toIndexPath.section)
             currentTableView.reloadSections(indexSet, with: .automatic)
             currentTableView.endUpdates()
-            guard let editCell = currentTableView.cellForRow(at: toIndexPath) as? EditingCardCell else {
+            guard let editCell = cellForRowAt(indexPath: toIndexPath, onPage: toPage) as? EditingCardCell else {
                 print("ERROR: couldn't get editing cell")
                 return nil
             }
@@ -220,9 +219,17 @@ extension TreeViewController: PagedTableViewControllerDataSource {
         var cardCell: CardCell
         switch cell.state {
         case .editing:
-            cardCell = pagedTableViewController.dequeueReusableCellWithIdentifier(cell.state.reuseIdentifier, forCellAtIndexPath: indexPath, onPage: page) as! EditingCardCell
+            if cell == selectedCell {
+                cardCell = pagedTableViewController.dequeueReusableCellWithIdentifier(cell.state.reuseIdentifier, forCellAtIndexPath: indexPath, onPage: page) as! EditingCardCell
+            } else {
+                fallthrough
+            }
         case .selected:
-            cardCell = pagedTableViewController.dequeueReusableCellWithIdentifier(cell.state.reuseIdentifier, forCellAtIndexPath: indexPath, onPage: page) as! SelectedCardCell
+            if cell == selectedCell {
+                cardCell = pagedTableViewController.dequeueReusableCellWithIdentifier(cell.state.reuseIdentifier, forCellAtIndexPath: indexPath, onPage: page) as! SelectedCardCell
+            } else {
+                fallthrough
+            }
         default:
             let state = stateForCell(cell: cell)
             cell.state = state
