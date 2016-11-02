@@ -139,8 +139,4 @@ extension TreeBrowseController: UITableViewDelegate {
         trees.remove(at: indexPath.row)
         tableView.deleteRows(at: [indexPath], with: .automatic)
     }
-    
-    func tableView(_ tableView: UITableView, canFocusRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
 }

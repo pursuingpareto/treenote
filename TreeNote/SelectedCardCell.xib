@@ -21,9 +21,6 @@
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vt8-gL-guv">
                         <rect key="frame" x="14" y="114" width="309" height="21"/>
-                        <constraints>
-                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="82X-VY-LCS"/>
-                        </constraints>
                         <attributedString key="attributedText">
                             <fragment content="Label">
                                 <attributes>
