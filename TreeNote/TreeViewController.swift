@@ -37,27 +37,19 @@ class TreeViewController: PagedTableViewController {
         var data = [[[Cell]]]()
         while true {
             let sectionedCells = tree.getSectionedCells(atDepth: depth)
-            guard !sectionedCells.isEmpty else {
-                return data
-            }
-            guard !sectionedCells[0].isEmpty else {
-                return data
-            }
+            guard !sectionedCells.isEmpty else { return data }
+            guard !sectionedCells[0].isEmpty else { return data }
             data.append(sectionedCells)
             depth += 1
         }
     }
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
-    override func loadView() {
         ptvcDataSource = self
         ptvcDelegate = self
-        super.loadView()
+        super.viewDidLoad()
     }
-    
+
     fileprivate func getCell(forIndexPath indexPath: IndexPath, onPage page: Int) -> Cell? {
         return treeData[page][indexPath.section][indexPath.row]
     }
@@ -296,7 +288,6 @@ extension TreeViewController: PagedTableViewControllerDelegate {
         default:
             print("don't need to add any sections for update.")
         }
-        focusMode = .asSiblingsOfCell
     }
 
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, shouldHighlightRowAt indexPath: IndexPath, onPage page: Int) -> Bool {
@@ -322,7 +313,6 @@ extension TreeViewController: PagedTableViewControllerDelegate {
         var nextFocusMode = focusMode
         defer {
             selectedCell?.state = .focused
-//            selectedCell = nil
             var previousFocusMode = focusMode
             focusMode = nextFocusMode
             let nextTableView = tableViews[toPage]
@@ -383,7 +373,7 @@ extension TreeViewController: PagedTableViewControllerDelegate {
             if section > maxSection-1 {
                 section = maxSection - 1
             }
-            // should scroll with multiple sections visible.
+            // should scroll with multiple sections visible when swiped cell doesn't have children.
             if swipedCell.children.count == 0 && section > 0 {
                 return IndexPath(row: treeData[nextPage][section-1].count - 1, section: section-1)
             }
@@ -401,7 +391,6 @@ extension TreeViewController: PagedTableViewControllerDelegate {
         case .addCell:
             let section = indexPathForNewChildOfCell(selectedCell!, onPage: fromPage).section
             return IndexPath(row: 0, section: section)
-    
         default:
             print("Error! couldn't get a scroll position because currentTransitionMode is none")
             return nil

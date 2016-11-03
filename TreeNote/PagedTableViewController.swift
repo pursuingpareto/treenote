@@ -15,7 +15,13 @@ class PagedTableViewController: UIPageViewController {
     public var ptvcDataSource: PagedTableViewControllerDataSource!
     public var ptvcDelegate: PagedTableViewControllerDelegate?
     public var currentTableView: UITableView! { return currentViewController.tableView! }
+    public var tableViews = [UITableView]()
     public var indexPathsOfSelectedCells = Set<IndexPath>()
+    public var indexPathOfLastSwipe: IndexPath?
+    public fileprivate(set) var currentPage: Int = 0 {
+        didSet { previousPage = oldValue }
+    }
+    
     public func dequeueReusableCellWithIdentifier(_ identifier: String, forCellAtIndexPath indexPath: IndexPath, onPage page: Int) -> UITableViewCell? {
         let viewController = orderedViewControllers[page]
         let tableView = viewController.tableView!
@@ -49,16 +55,30 @@ class PagedTableViewController: UIPageViewController {
         })
     }
     
+    public func addPage(forPage page: Int) {
+        let tableViewController = UITableViewController(style: .grouped)
+        tableViewController.tableView.dataSource = self
+        tableViewController.tableView.delegate = self
+        orderedViewControllers.append(tableViewController)
+        let tableView = tableViewController.tableView!
+        tableView.allowsSelection = true
+        tableView.allowsMultipleSelection = false
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 250.0
+        if let reuseIdentifiers = ptvcDelegate?.reuseIdentifiersToRegister?(forTableViewOnPage: page) {
+            for (identifier, nibName) in reuseIdentifiers {
+                let nib = UINib(nibName: nibName, bundle: nil)
+                tableView.register(nib, forCellReuseIdentifier: identifier)
+            }
+        }
+        tableViews.append(tableViewController.tableView)
+    }
+    
+    fileprivate var orderedViewControllers = [UITableViewController]()
+    fileprivate var previousPage: Int?
     fileprivate var currentViewController: UITableViewController! {
         return viewControllers!.last as! UITableViewController
     }
-    public var tableViews = [UITableView]()
-    fileprivate var orderedViewControllers = [UITableViewController]()
-    public var indexPathOfLastSwipe: IndexPath?
-    public fileprivate(set) var currentPage: Int = 0 {
-        didSet { previousPage = oldValue }
-    }
-    fileprivate var previousPage: Int?
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -82,25 +102,6 @@ class PagedTableViewController: UIPageViewController {
         for pageNum in 0...numPages-1 {
             addPage(forPage: pageNum)
         }
-    }
-    
-    public func addPage(forPage page: Int) {
-        let tableViewController = UITableViewController(style: .grouped)
-        tableViewController.tableView.dataSource = self
-        tableViewController.tableView.delegate = self
-        orderedViewControllers.append(tableViewController)
-        let tableView = tableViewController.tableView!
-        tableView.allowsSelection = true
-        tableView.allowsMultipleSelection = false
-        tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 250.0
-        if let reuseIdentifiers = ptvcDelegate?.reuseIdentifiersToRegister?(forTableViewOnPage: page) {
-            for (identifier, nibName) in reuseIdentifiers {
-                let nib = UINib(nibName: nibName, bundle: nil)
-                tableView.register(nib, forCellReuseIdentifier: identifier)
-            }
-        }
-        tableViews.append(tableViewController.tableView)
     }
     
     private func addInterceptingPanRecognizer() {
@@ -131,32 +132,21 @@ extension PagedTableViewController: UIPageViewControllerDataSource{
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        guard let viewController = viewController as? UITableViewController else {
-            return nil
-        }
-        guard let index = orderedViewControllers.index(of: viewController) else {
-            return nil
-        }
-        if index == 0 {
-            return nil
-        } else {
-            return orderedViewControllers[index-1]
-        }
+        guard let viewController = viewController as? UITableViewController else { return nil }
+        guard let index = orderedViewControllers.index(of: viewController) else { return nil }
+        if index == 0 { return nil }
+        return orderedViewControllers[index-1]
     }
 }
 
 extension PagedTableViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
-        guard let nextViewController = pendingViewControllers.first as? UITableViewController else {
-            return
-        }
-        previousPage = currentPage
-        guard let nextPage = orderedViewControllers.index(of: nextViewController) else {
-            return
-        }
+        guard let nextViewController = pendingViewControllers.first as? UITableViewController else { return }
+        let previousPage = currentPage
+        guard let nextPage = orderedViewControllers.index(of: nextViewController) else { return }
         indexPathsOfSelectedCells.removeAll()
         ptvcDelegate?.pagedTableViewController?(self, willTransition: nextPage, fromPage: currentPage)
-        if let scrollPosition = ptvcDelegate?.pagedTableViewController?(self, scrollPositionForTransitionToPage: nextPage, fromPage: previousPage!, withSwipeAt: indexPathOfLastSwipe) {
+        if let scrollPosition = ptvcDelegate?.pagedTableViewController?(self, scrollPositionForTransitionToPage: nextPage, fromPage: previousPage, withSwipeAt: indexPathOfLastSwipe) {
             nextViewController.tableView.scrollToRow(at: scrollPosition, at: .top, animated: true)
         }
     }
