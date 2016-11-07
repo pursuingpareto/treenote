@@ -107,23 +107,22 @@ class TreeViewController: PagedTableViewController {
         let newCell = Cell()
         newCell.state = .editing
         cell.state = .focused
+        selectedCell = newCell
         if parent != nil && toPage != fromPage {
             if toPage > fromPage {
                 selectedParentCell = getCell(forIndexPath: fromIndexPath, onPage: fromPage)
+                defer {
+                    scrollRight(completion: nil)
+                }
             }
             if toPage >= treeData.count {
+                tree.addCell(cell: newCell, toParent: parent, atIndex: toIndexPath.row)
                 addPage(forPage: toPage)
+            } else {
+                tree.addCell(cell: newCell, toParent: parent, atIndex: toIndexPath.row)
             }
             let tableView = tableViews[toPage]
-            tree.addCell(cell: newCell, toParent: parent, atIndex: toIndexPath.row)
-            if parent!.children.count == 1 {
-                var indexSet = IndexSet()
-                indexSet.insert(toIndexPath.section)
-                tableView.insertSections(indexSet, with: .none)
-            } else {
-                tableView.insertRows(at: [toIndexPath], with: .none)
-                print("inserted row at indexPath \(toIndexPath) on page \(tableViews.index(of: tableView))")
-            }
+            print("added cell to parent with text \(parent!.text) at \(toIndexPath.row)")
             tableView.reloadData()
             guard let editCell = cellForRowAt(indexPath: toIndexPath, onPage: toPage) as? EditingCardCell else {
                 print("ERROR! couldn't get editing cell at indexPath \(toIndexPath) on page \(toPage)")
@@ -198,6 +197,8 @@ extension TreeViewController: PagedTableViewControllerDataSource {
     }
     
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, numberOfSectionsOnPage page: Int) -> Int {
+        print("getting tree sections on page \(page)")
+        print("tree has \(treeData.count) pages")
         return treeData[page].count
     }
     
