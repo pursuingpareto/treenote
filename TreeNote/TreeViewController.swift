@@ -19,6 +19,7 @@ enum TransitionMode {
     case swipeToChildren
     case swipeToParents
     case addCell
+    case fromDeleteOfLastCell
     case none
 }
 
@@ -306,7 +307,7 @@ extension TreeViewController: PagedTableViewControllerDelegate {
     }
     
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, willTransition toPage: Int, fromPage: Int) {
-        if currentTransitionMode != .addCell {
+        if currentTransitionMode != .addCell && currentTransitionMode != .fromDeleteOfLastCell {
             currentTransitionMode = (toPage > fromPage) ? .swipeToChildren : .swipeToParents
         }
         // do necessary updates for fromPage tableView and prepare toPage data
@@ -505,9 +506,16 @@ extension TreeViewController: CardCellDelegate {
             pageNum += 1
         }
         deleteDescendents(ofParent: cell, onPage: currentPage)
-        currentTableView.beginUpdates()
         tree.delete(cell: cell)
-        currentTableView.deleteRows(at: [indexPath], with: .automatic)
-        currentTableView.endUpdates()
+        let cells = tree.getSectionedCells(atDepth: currentPage).joined()
+        if cells.count == 0 {
+            currentTransitionMode = .fromDeleteOfLastCell
+            selectedCell = nil
+            selectedChildCell = nil
+            selectedParentCell = nil
+            scrollLeft()
+            removeLastPage()
+        }
+        currentTableView.reloadData()
     }
 }

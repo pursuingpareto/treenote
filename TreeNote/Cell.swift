@@ -40,6 +40,7 @@ class Cell: NSObject, NSCoding {
     }
     
     func add(cell: Cell, atIndex index: Int) {
+        print("i'm adding a cell at index \(index)")
         self.children.insert(cell, at: index)
         cell.parent = self
     }

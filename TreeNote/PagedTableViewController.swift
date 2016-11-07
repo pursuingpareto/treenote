@@ -32,7 +32,7 @@ class PagedTableViewController: UIPageViewController {
         let tableView = orderedViewControllers[page].tableView!
         return tableView.cellForRow(at: indexPath)
     }
-    
+    // TODO - remove completion
     public func scrollRight(completion: (() -> Void)?) {
         guard currentPage != orderedViewControllers.count-1 else { return }
         let lastVC = currentViewController
@@ -72,6 +72,11 @@ class PagedTableViewController: UIPageViewController {
             }
         }
         tableViews.append(tableViewController.tableView)
+    }
+    
+    public func removeLastPage() {
+        let _ = orderedViewControllers.popLast()
+        let _ = tableViews.popLast()
     }
     
     fileprivate var orderedViewControllers = [UITableViewController]()
