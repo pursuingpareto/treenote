@@ -35,8 +35,6 @@
 		A1EE87001DC00119002E56C8 /* PagedTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE86FC1DC00119002E56C8 /* PagedTableViewController.swift */; };
 		A1EE87011DC00119002E56C8 /* PagedTableViewControllerDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE86FD1DC00119002E56C8 /* PagedTableViewControllerDataSource.swift */; };
 		A1EE87021DC00119002E56C8 /* PagedTableViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE86FE1DC00119002E56C8 /* PagedTableViewDelegate.swift */; };
-		A1EE87031DC00119002E56C8 /* PagedTableViewInteractionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE86FF1DC00119002E56C8 /* PagedTableViewInteractionType.swift */; };
-		A1EE87061DC01435002E56C8 /* CardCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EE87051DC01435002E56C8 /* CardCellDelegate.swift */; };
 		F20A8059E9956DF8A020E40A /* Pods_TreeNoteTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33EDF3C29106CC648F366D93 /* Pods_TreeNoteTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -97,8 +95,6 @@
 		A1EE86FC1DC00119002E56C8 /* PagedTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PagedTableViewController.swift; sourceTree = "<group>"; };
 		A1EE86FD1DC00119002E56C8 /* PagedTableViewControllerDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PagedTableViewControllerDataSource.swift; sourceTree = "<group>"; };
 		A1EE86FE1DC00119002E56C8 /* PagedTableViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PagedTableViewDelegate.swift; sourceTree = "<group>"; };
-		A1EE86FF1DC00119002E56C8 /* PagedTableViewInteractionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PagedTableViewInteractionType.swift; sourceTree = "<group>"; };
-		A1EE87051DC01435002E56C8 /* CardCellDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardCellDelegate.swift; sourceTree = "<group>"; };
 		ED2B02A3274CFF9C47A0FBFD /* Pods-TreeNoteUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TreeNoteUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TreeNoteUITests/Pods-TreeNoteUITests.release.xcconfig"; sourceTree = "<group>"; };
 		F4F903209188B6AA1E7F1B1F /* Pods-TreeNote.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TreeNote.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TreeNote/Pods-TreeNote.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -182,12 +178,8 @@
 				A1EE86AC1DBFDD9D002E56C8 /* AppDelegate.swift */,
 				A1E59A7C1DC3F4C5006B4BF8 /* User.swift */,
 				A1EE86FA1DBFF213002E56C8 /* Colors.swift */,
-				A1EE86DC1DBFDDFF002E56C8 /* TreeViewController.swift */,
-				A1E59A7E1DC41480006B4BF8 /* FormattingHelpController.swift */,
-				A1EE87051DC01435002E56C8 /* CardCellDelegate.swift */,
 				A1EE86B01DBFDD9D002E56C8 /* Main.storyboard */,
-				A1E59A781DC3E6DA006B4BF8 /* TreeBrowseController.swift */,
-				A1EE87041DC00121002E56C8 /* PagedTableViewController */,
+				A1F0C5F11DCAA8ED00139E44 /* ViewControllers */,
 				A1EE86E01DBFDE26002E56C8 /* Models */,
 				A1EE86E11DBFDE31002E56C8 /* Views */,
 				A1EE86B31DBFDD9D002E56C8 /* Assets.xcassets */,
@@ -247,9 +239,19 @@
 				A1EE86FC1DC00119002E56C8 /* PagedTableViewController.swift */,
 				A1EE86FD1DC00119002E56C8 /* PagedTableViewControllerDataSource.swift */,
 				A1EE86FE1DC00119002E56C8 /* PagedTableViewDelegate.swift */,
-				A1EE86FF1DC00119002E56C8 /* PagedTableViewInteractionType.swift */,
 			);
 			name = PagedTableViewController;
+			sourceTree = "<group>";
+		};
+		A1F0C5F11DCAA8ED00139E44 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				A1EE87041DC00121002E56C8 /* PagedTableViewController */,
+				A1EE86DC1DBFDDFF002E56C8 /* TreeViewController.swift */,
+				A1E59A7E1DC41480006B4BF8 /* FormattingHelpController.swift */,
+				A1E59A781DC3E6DA006B4BF8 /* TreeBrowseController.swift */,
+			);
+			name = ViewControllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -541,9 +543,7 @@
 				A1EE86AD1DBFDD9D002E56C8 /* AppDelegate.swift in Sources */,
 				A1E59A7B1DC3E8FD006B4BF8 /* TreeBrowseCell.swift in Sources */,
 				A1EE86DF1DBFDE1D002E56C8 /* Cell.swift in Sources */,
-				A1EE87061DC01435002E56C8 /* CardCellDelegate.swift in Sources */,
 				A1EE86E51DBFDE57002E56C8 /* SelectedCardCell.swift in Sources */,
-				A1EE87031DC00119002E56C8 /* PagedTableViewInteractionType.swift in Sources */,
 				A1EE86E71DBFDE74002E56C8 /* EditingCardCell.swift in Sources */,
 				A1E59A7D1DC3F4C5006B4BF8 /* User.swift in Sources */,
 				A1E59A791DC3E6DA006B4BF8 /* TreeBrowseController.swift in Sources */,

@@ -14,3 +14,14 @@ class CardCell: UITableViewCell {
         fatalError("Must override setup(withCell:)")
     }
 }
+
+protocol CardCellDelegate {
+    func editButtonPressed(inCardCell cardCell: SelectedCardCell)
+    func deleteButtonPressed(inCardCell cardCell: SelectedCardCell)
+    func didEndEditing(textView: UITextView, inCardCell cardCell: EditingCardCell)
+    func addBelowButtonPressed(inCardCell cardCell: SelectedCardCell)
+    func addAboveButtonPressed(inCardCell cardCell: SelectedCardCell)
+    func addRightButtonPressed(inCardCell cardCell: SelectedCardCell)
+    func doneEditingButtonPressed(inCardCell cardCell: EditingCardCell)
+    func formattingHelpButtonPressed(inCardCell cardCell: CardCell)
+}
