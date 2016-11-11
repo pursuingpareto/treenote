@@ -14,3 +14,5 @@ It's called tree note because the underlying structure is a tree and I wasn't fe
 	}
 }
 ```
+
+I'm planning to open source the `PagedTableViewController` as it's own component but need to make some improvements, most notably to the API. 
