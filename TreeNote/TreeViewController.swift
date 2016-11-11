@@ -112,9 +112,7 @@ class TreeViewController: PagedTableViewController {
         if parent != nil && toPage != fromPage {
             if toPage > fromPage {
                 selectedParentCell = getCell(forIndexPath: fromIndexPath, onPage: fromPage)
-                defer {
-                    scrollRight(completion: nil)
-                }
+                defer { scrollRight(completion: nil) }
             }
             if toPage >= treeData.count {
                 tree.addCell(cell: newCell, toParent: parent, atIndex: toIndexPath.row)
@@ -207,7 +205,7 @@ extension TreeViewController: PagedTableViewControllerDataSource {
         return treeData[page][section].count
     }
     
-    // TODO - fix so only one card can be editing or selected
+    // TODO - fix so only one card can be editing or selected at a time.
     func pagedTableViewController(_ pagedTableViewController: PagedTableViewController, cellForRowAt indexPath: IndexPath, onPage page: Int) -> UITableViewCell {
         let cell = treeData[page][indexPath.section][indexPath.row]
         var cardCell: CardCell
@@ -416,7 +414,6 @@ extension TreeViewController: CardCellDelegate {
         self.currentTableView.reloadSections(indexSet, with: .automatic)
         self.currentTableView.endUpdates()
         currentTableView.scrollToRow(at: indexPath, at: .top, animated: true)
-        // TODO - see how much of this is necessary
         DispatchQueue.global(qos: .userInitiated).async {
             DispatchQueue.main.async {
                 guard let newCell = self.cellForRowAt(indexPath: indexPath, onPage: self.currentPage) else {
@@ -500,7 +497,6 @@ extension TreeViewController: CardCellDelegate {
         }
         var pageNum = currentPage + 1
         while pageNum < tableViews.count-1 {
-            // todo - move reloadData calls to background thread
             let table = tableViews[pageNum]
             DispatchQueue.main.async { table.reloadData() }
             pageNum += 1

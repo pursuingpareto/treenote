@@ -9,6 +9,7 @@
 import Foundation
 
 class User {
+    // TODO - pull all this "exampleTree" business into a separate file.
     var exampleTree = Tree(rootCells: [
         Cell(withMarkdownText: "# ![Tree image](https://gingkoapp.com/p/images/leaf.png) Welcome!\nThis is the first **`root cell`** in the tree."),
         Cell(withMarkdownText: "## ![Tree image](https://gingkoapp.com/p/images/leaf.png) Navigation\nSwipe **left** on this card to see its **`children`**"),
