@@ -5,13 +5,13 @@ It's called tree note because the underlying structure is a tree and I wasn't fe
 
 ```json
 {
-	"text": "Chapter 1",
-	"children" : {
-[
-{"text" : "Chapter 1, part 1", "children" : []},
-{"text" : "Chapter 1, part 2", "children" : []}
-]
-}
+		"text": "Chapter 1",
+		"children" : {
+		[
+			{"text" : "Chapter 1, part 1", "children" : []},
+			{"text" : "Chapter 1, part 2", "children" : []}
+		]
+	}
 }
 ```
 
