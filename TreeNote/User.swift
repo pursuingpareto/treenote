@@ -19,15 +19,16 @@ class User {
         ], title: "Demonstration Tree")
     
     var techTree = Tree(rootCells: [
-        Cell(withMarkdownText: "# Models\nThis app uses 3 models: `Tree`, `Cell`, and `User`"),
+        Cell(withMarkdownText: "# Models\nThis app uses 3 models:\n1. `Tree`\n2. `Cell`\n3.  `User`"),
         Cell(withMarkdownText: "# Views\nMost of the visual work is in the cells which populate the various table views used in this app."),
-        Cell(withMarkdownText: "# ViewControllers\nThis app has 4 view controllers: `PagedTableViewController` (which also has corresponding `delegate` and `dataSource` protocols), `TreeViewController` (which conforms to these protocols), `TreeBrowseViewController`, and `FormattingHelpController`.")
+        Cell(withMarkdownText: "# ViewControllers\nThis app has 4 view controllers\n1. `PagedTableViewController` (which also has corresponding `delegate` and `dataSource` protocols)\n2. `TreeViewController` (which conforms to these protocols)\n3.  `TreeBrowseViewController`\n4. `FormattingHelpController`.")
         ], title: "Technical Notes")
     
     static let sharedInstance = User()
     
     init() {
         setupExampleTree()
+        setupTechTree()
     }
     
     var trees = [Tree]()
@@ -62,5 +63,18 @@ class User {
         whyCell.append(cell: Cell(withMarkdownText: "### Reason 1: I love Gingko\nI like taking notes in a way that lets me jump between levels of granularity without losing context. I find Gingko's hierarchical approach great for that."))
         whyCell.append(cell: Cell(withMarkdownText: "### Reason 2: Get back into iOS development\nIt had been a while since I'd done iOS development and I wanted to get back in the game / try out Swift 3 / have some code to share with people who may want to hire me 😬.\nI chose to recreate *some* of Gingko because it allowed me to use the existing web app as a sort of spec and focus my effort on the code."))
         whyCell.append(cell: Cell(withMarkdownText: "### Why not put this in the App Store?\nAfter getting this to a suitable beta-level I realized that too much is lost in the small-screen implementation of this. It's impractical to actually show the parents, children **and** siblings of a given card at once on an iPhone but without all of that context I think you lose most of what I loved about Gingko in the first place."))
+    }
+    
+    private func setupTechTree() {
+        let modelCell = techTree!.rootCells[0]
+        modelCell.append(cell: Cell(withMarkdownText: "## `Tree`\nA tree is an ordered list of root nodes (cells), each of which may have children. Each column represents the cells in the tree which live at a certain depth. Cells are grouped into sections when they share a common parent."))
+        modelCell.append(cell: Cell(withMarkdownText: "## `Cell`\nA cell is node in a tree. It has a parent (which is nil for the root cells) and markdown text associated with it."))
+        modelCell.append(cell: Cell(withMarkdownText: "## `User`\nA singleton representing the data associated with the app's user (namely all the user's note trees)"))
+        modelCell.append(cell: Cell(withMarkdownText: "### Note on Persistence\nPersistence is accomplished locally with NSKeyedArchiver / Unarchiver. Since the underlying data is generally-small amounts of text, loading all of a user's trees into memory seems acceptable."))
+        
+        let vcCell = techTree!.rootCells[2]
+        vcCell.append(cell: Cell(withMarkdownText: "## `PagedTableViewController`"))
+        
+        
     }
 }
