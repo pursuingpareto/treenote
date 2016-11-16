@@ -62,10 +62,10 @@ class TreeBrowseController: UIViewController {
             // user already has some saved trees.
             trees = userTrees
             if trees.count == 0 {
-                trees = [User.sharedInstance.exampleTree!, User.sharedInstance.techTree!]
+                trees = [User.sharedInstance.exampleTree!]
             }
         } else {
-            trees = [User.sharedInstance.exampleTree!, User.sharedInstance.techTree!]
+            trees = [User.sharedInstance.exampleTree!]
         }
     }
     
